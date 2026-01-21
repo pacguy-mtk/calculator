@@ -299,6 +299,15 @@
             font-weight: 500;
             color: #1976d2;
         }
+        .coming-badge {
+            background: #4c00b0; /* 醒目 */
+            color: #FFFFFF; /* 文字，在背景上更清晰 */
+            font-size: 0.7rem; /* 比LIVE标签稍小一点 */
+            padding: 3px 8px; /* 内边距也相应调小 */
+            border-radius: 12px;
+            font-weight: bold;
+            border: 1px solid rgba(0, 0, 0, 0.1); /* 可选：加一条细细的深色边框增加质感 */
+        }
         
         @media (max-width: 768px) {
             .item-row {
@@ -332,7 +341,9 @@
                  alt="Kee Hup Logo" 
                  style="max-height: 80px; max-width: 100%;">
         </h1>
-        <p class="subtitle">Calculate printing costs for office materials</p>
+        <span class="coming-badge">COMING SOON</span>
+        <p class="subtitle">Calculate printing costs</p>
+        <span class="coming-badge">COMING SOON</span>
         
         <div class="calculator-section">
             <div class="section-title">1. Select Material</div>
