@@ -485,6 +485,9 @@
           <textarea id="printingNotes" placeholder="e.g., Walk-in customer, wearing black t-shirt
 e.g., Customer will provide own design
 " rows="4"></textarea>
+          <textarea id="printingNotes" rows="2">
+                最低价Tarpaulin RM30 
+            </textarea>
           <div class="notes-info">
             <small>This note will be saved and included in the printed quote</small>
           </div>
@@ -515,7 +518,7 @@ e.g., Customer will provide own design
         'design-fees': {
           name: 'Design Fees',
           price: 80.00,
-          unit: 'minute'
+          unit: 'min.'
         }
       };
       let currentMaterial = 'tarpaulin-solvent';
@@ -561,10 +564,10 @@ e.g., Customer will provide own design
           priceInput.value = material.price.toFixed(2);
           // 如果是设计费，切换单位
           if (currentMaterial === 'design-fees') {
-            widthInput.placeholder = 'Minutes';
+            widthInput.placeholder = 'Minimum';
             heightInput.value = 1;
             heightInput.disabled = true;
-            priceInput.placeholder = 'RM per minute';
+            priceInput.placeholder = 'RM per min.';
           } else {
             widthInput.placeholder = 'Width';
             heightInput.disabled = false;
@@ -596,8 +599,8 @@ e.g., Customer will provide own design
         let quantity, unit, sizeDisplay;
         if (currentMaterial === 'design-fees') {
           quantity = width; // 分钟数
-          unit = 'minute';
-          sizeDisplay = `${quantity} min`;
+          unit = 'minimum';
+          sizeDisplay = `${quantity} min.`;
         } else {
           quantity = width * height;
           unit = 'sqft';
@@ -634,6 +637,8 @@ e.g., Customer will provide own design
           itemsContainer.innerHTML = `
               
 														
+														
+														
 														<div class="no-items">No items added yet</div>
           `;
           return;
@@ -643,6 +648,8 @@ e.g., Customer will provide own design
         header.className = 'item-row header';
         header.innerHTML = `
           
+														
+														
 														
 														<div>Description</div>
 														<div>Size</div>
@@ -658,6 +665,8 @@ e.g., Customer will provide own design
           row.className = 'item-row';
           row.innerHTML = `
               
+														
+														
 														
 														<div>${item.name}</div>
 														<div>${item.sizeDisplay}</div>
@@ -682,20 +691,20 @@ e.g., Customer will provide own design
       // 更新总计
       function updateTotals() {
         let totalSqft = 0;
-        let totalMinutes = 0;
+        let totalMinimum = 0;
         let subtotal = 0;
         items.forEach(item => {
           subtotal += item.subtotal;
           if (item.unit === 'sqft') {
             totalSqft += item.quantity;
           } else {
-            totalMinutes += item.quantity;
+            totalMinimum += item.quantity;
           }
         });
         // 显示总计
         totalSqftSumEl.textContent = `${totalSqft.toFixed(2)} sqft`;
-        if (totalMinutes > 0) {
-          totalSqftSumEl.textContent += ` + ${totalMinutes.toFixed(1)} min`;
+        if (totalMinimum > 0) {
+          totalSqftSumEl.textContent += ` + ${totalMinimum.toFixed(1)} min`;
         }
         subtotalEl.textContent = `RM ${subtotal.toFixed(2)}`;
         totalEl.textContent = `RM ${subtotal.toFixed(2)}`;
@@ -731,6 +740,8 @@ e.g., Customer will provide own design
         const notes = notesTextarea ? notesTextarea.value.trim() : '';
         const printContent = `
           
+														
+														
 														
 														<html>
 															<head>
@@ -822,6 +833,8 @@ e.g., Customer will provide own design
               ${notes ? `
               
 																
+																
+																
 																<div class="notes-box">
 																	<div style="font-weight: bold; color: #856404; font-size: 16px; margin-bottom: 10px;">
                       📝 Notes:
@@ -831,6 +844,8 @@ e.g., Customer will provide own design
               ` : ''}
               
               
+																
+																
 																
 																<table>
 																	<thead>
@@ -846,6 +861,8 @@ e.g., Customer will provide own design
                       ${items.map(item => `
                           
 																		
+																		
+																		
 																		<tr>
 																			<td>${item.name}</td>
 																			<td>${item.sizeDisplay}</td>
@@ -856,11 +873,15 @@ e.g., Customer will provide own design
                       `).join('')}
                   
 																	
+																	
+																	
 																	</tbody>
 																</table>
 																<div class="total-section">
 																	<div style="font-size: 18px; margin-bottom: 10px;">
                       Subtotal: 
+																		
+																		
 																		
 																		<strong>RM ${items.reduce((s, i) => s + i.subtotal, 0).toFixed(2)}</strong>
 																	</div>
