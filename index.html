@@ -317,6 +317,72 @@
         /* 可选：加一条细细的深色边框增加质感 */
       }
 
+      /* 备注区域样式 */
+      .notes-section {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 25px;
+        border: 2px solid #e3f2fd;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      }
+
+      .notes-section textarea {
+        width: 100%;
+        padding: 15px;
+        border: 2px solid #dee2e6;
+        border-radius: 8px;
+        font-size: 15px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.5;
+        resize: vertical;
+        transition: all 0.3s;
+        background: #f8f9fa;
+      }
+
+      .notes-section textarea:focus {
+        border-color: #3498db;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        background: white;
+      }
+
+      .notes-section textarea::placeholder {
+        color: #6c757d;
+        font-style: italic;
+      }
+
+      .notes-info {
+        margin-top: 10px;
+        color: #6c757d;
+        font-size: 0.85em;
+        text-align: right;
+      }
+
+      /* 马来西亚风格的实用标签 */
+      .quick-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 15px;
+      }
+
+      .tag-btn {
+        background: #e3f2fd;
+        border: 1px solid #bbdefb;
+        border-radius: 20px;
+        padding: 6px 15px;
+        font-size: 0.85em;
+        color: #1976d2;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .tag-btn:hover {
+        background: #bbdefb;
+        transform: translateY(-2px);
+      }
+
       @media (max-width: 768px) {
         .item-row {
           grid-template-columns: 1fr;
@@ -412,6 +478,18 @@
         <div class="total-row">
           <span>Subtotal:</span>
           <span id="subtotal">RM 0.00</span>
+        </div>
+        <!-- 在总计区域之前添加 -->
+        <div class="notes-section">
+          <div class="section-title">📝 Printing Notes / Special Instructions</div>
+          <textarea id="printingNotes" placeholder="e.g., Walk-in customer, wearing black t-shirt
+e.g., Urgent order - need by tomorrow
+e.g., Use premium quality material
+e.g., Customer will provide own design
+e.g., Install at location: Ground floor lobby" rows="4"></textarea>
+          <div class="notes-info">
+            <small>This note will be saved and included in the printed quote</small>
+          </div>
         </div>
         <div class="total-row grand-total">
           <span>GRAND TOTAL:</span>
@@ -556,6 +634,8 @@
         if (items.length === 0) {
           itemsContainer.innerHTML = `
                     
+														
+														
 														<div class="no-items">No items added yet</div>
                 `;
           return;
@@ -565,6 +645,8 @@
         header.className = 'item-row header';
         header.innerHTML = `
                 
+														
+														
 														<div>Description</div>
 														<div>Size</div>
 														<div>sqft/min</div>
@@ -579,6 +661,8 @@
           row.className = 'item-row';
           row.innerHTML = `
                     
+														
+														
 														<div>${item.name}</div>
 														<div>${item.sizeDisplay}</div>
 														<div>${item.quantity.toFixed(2)} ${item.unit}</div>
@@ -650,6 +734,8 @@
         }
         const printContent = `
                 
+														
+														
 														<html>
 															<head>
 																<title>Printing Quote - ${new Date().toLocaleDateString()}</title>
@@ -714,6 +800,7 @@
                             color: #6c757d;
                             text-align: center;
                         }
+                                    
                         @media print {
                             body { padding: 15px; }
                             .no-print { display: none; }
@@ -741,6 +828,8 @@
 																	<tbody>
                             ${items.map(item => `
                                 
+																		
+																		
 																		<tr>
 																			<td>${item.name}</td>
 																			<td>${item.sizeDisplay}</td>
@@ -750,11 +839,15 @@
 																		</tr>
                             `).join('')}
                         
+																	
+																	
 																	</tbody>
 																</table>
 																<div class="total-section">
 																	<div style="font-size: 18px; margin-bottom: 10px;">
                             Subtotal: 
+																		
+																		
 																		<strong>RM ${items.reduce((s, i) => s + i.subtotal, 0).toFixed(2)}</strong>
 																	</div>
 																	<div class="grand-total">
