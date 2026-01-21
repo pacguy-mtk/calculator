@@ -481,12 +481,10 @@
         </div>
         <!-- 在总计区域之前添加 -->
         <div class="notes-section">
-          <div class="section-title">📝 Printing Notes / Special Instructions</div>
+          <div class="section-title">📝 Notes</div>
           <textarea id="printingNotes" placeholder="e.g., Walk-in customer, wearing black t-shirt
-e.g., Urgent order - need by tomorrow
-e.g., Use premium quality material
 e.g., Customer will provide own design
-e.g., Install at location: Ground floor lobby" rows="4"></textarea>
+" rows="4"></textarea>
           <div class="notes-info">
             <small>This note will be saved and included in the printed quote</small>
           </div>
@@ -522,7 +520,7 @@ e.g., Install at location: Ground floor lobby" rows="4"></textarea>
       };
       let currentMaterial = 'tarpaulin-solvent';
       let items = [];
-      // DOM元素
+      // DOM元素（新增备注框）
       const categoryBtns = document.querySelectorAll('.category-btn');
       const itemNameInput = document.getElementById('itemName');
       const widthInput = document.getElementById('width');
@@ -536,6 +534,7 @@ e.g., Install at location: Ground floor lobby" rows="4"></textarea>
       const totalEl = document.getElementById('total');
       const resetBtn = document.getElementById('resetBtn');
       const printBtn = document.getElementById('printBtn');
+      const notesTextarea = document.getElementById('printingNotes'); // 新增这行！
       // 初始化
       function init() {
         updateMaterial();
@@ -633,19 +632,17 @@ e.g., Install at location: Ground floor lobby" rows="4"></textarea>
         itemsContainer.innerHTML = '';
         if (items.length === 0) {
           itemsContainer.innerHTML = `
-                    
-														
+              
 														
 														<div class="no-items">No items added yet</div>
-                `;
+          `;
           return;
         }
         // 表头
         const header = document.createElement('div');
         header.className = 'item-row header';
         header.innerHTML = `
-                
-														
+          
 														
 														<div>Description</div>
 														<div>Size</div>
@@ -653,15 +650,14 @@ e.g., Install at location: Ground floor lobby" rows="4"></textarea>
 														<div>Unit Price</div>
 														<div>Subtotal</div>
 														<div></div>
-            `;
+      `;
         itemsContainer.appendChild(header);
         // 项目行
         items.forEach(item => {
           const row = document.createElement('div');
           row.className = 'item-row';
           row.innerHTML = `
-                    
-														
+              
 														
 														<div>${item.name}</div>
 														<div>${item.sizeDisplay}</div>
@@ -669,7 +665,7 @@ e.g., Install at location: Ground floor lobby" rows="4"></textarea>
 														<div>RM ${item.price.toFixed(2)}/${item.unit}</div>
 														<div>RM ${item.subtotal.toFixed(2)}</div>
 														<button class="delete-btn" data-id="${item.id}" title="Remove">×</button>
-                `;
+          `;
           itemsContainer.appendChild(row);
         });
         // 添加删除事件
@@ -703,7 +699,6 @@ e.g., Install at location: Ground floor lobby" rows="4"></textarea>
         }
         subtotalEl.textContent = `RM ${subtotal.toFixed(2)}`;
         totalEl.textContent = `RM ${subtotal.toFixed(2)}`;
-        // 移除了GST，直接显示总价
       }
       // 存储到localStorage
       function saveItemsToStorage() {
@@ -726,95 +721,117 @@ e.g., Install at location: Ground floor lobby" rows="4"></textarea>
           updateTotals();
         }
       }
-      // 打印功能
+      // 打印功能（修改后的版本）
       function printQuote() {
         if (items.length === 0) {
           alert('Please add items before printing');
           return;
         }
+        // 获取备注内容
+        const notes = notesTextarea ? notesTextarea.value.trim() : '';
         const printContent = `
-                
-														
+          
 														
 														<html>
 															<head>
 																<title>Printing Quote - ${new Date().toLocaleDateString()}</title>
 																<style>
-                        body { 
-                            font-family: Arial, sans-serif; 
-                            padding: 25px; 
-                            max-width: 800px;
-                            margin: 0 auto;
-                        }
-                        .header { 
-                            text-align: center; 
-                            margin-bottom: 30px;
-                            border-bottom: 3px solid #2c3e50;
-                            padding-bottom: 20px;
-                        }
-                        h1 { 
-                            color: #2c3e50; 
-                            margin: 0;
-                        }
-                        .date { 
-                            color: #7f8c8d; 
-                            margin: 10px 0 20px;
-                        }
-                        table { 
-                            width: 100%; 
-                            border-collapse: collapse; 
-                            margin: 25px 0; 
-                            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-                        }
-                        th { 
-                            background: #2c3e50; 
-                            color: white; 
-                            padding: 15px; 
-                            text-align: left;
-                            font-weight: 600;
-                        }
-                        td { 
-                            padding: 12px 15px; 
-                            border-bottom: 1px solid #eee;
-                        }
-                        tr:nth-child(even) {
-                            background: #f8f9fa;
-                        }
-                        .total-section {
-                            text-align: right;
-                            margin-top: 30px;
-                            padding-top: 20px;
-                            border-top: 2px solid #2c3e50;
-                        }
-                        .grand-total {
-                            font-size: 24px;
-                            font-weight: bold;
-                            color: #2c3e50;
-                            margin-top: 10px;
-                        }
-                        .footer {
-                            margin-top: 40px;
-                            padding-top: 20px;
-                            border-top: 1px solid #ddd;
-                            font-size: 0.9em;
-                            color: #6c757d;
-                            text-align: center;
-                        }
-                                    
-                        @media print {
-                            body { padding: 15px; }
-                            .no-print { display: none; }
-                        }
-                    </style>
+                  body { 
+                      font-family: Arial, sans-serif; 
+                      padding: 25px; 
+                      max-width: 800px;
+                      margin: 0 auto;
+                  }
+                  .header { 
+                      text-align: center; 
+                      margin-bottom: 20px;
+                      border-bottom: 3px solid #2c3e50;
+                      padding-bottom: 15px;
+                  }
+                  h1 { 
+                      color: #2c3e50; 
+                      margin: 0;
+                      font-size: 28px;
+                  }
+                  .date { 
+                      color: #7f8c8d; 
+                      margin: 10px 0;
+                      font-size: 14px;
+                  }
+                  .notes-box {
+                      background: #fff3cd;
+                      border: 2px solid #ffc107;
+                      padding: 15px;
+                      margin: 20px 0;
+                      border-radius: 8px;
+                  }
+                  table { 
+                      width: 100%; 
+                      border-collapse: collapse; 
+                      margin: 25px 0; 
+                  }
+                  th { 
+                      background: #2c3e50; 
+                      color: white; 
+                      padding: 12px; 
+                      text-align: left;
+                      font-weight: 600;
+                      border: 1px solid #34495e;
+                  }
+                  td { 
+                      padding: 10px 12px; 
+                      border: 1px solid #ddd;
+                  }
+                  tr:nth-child(even) {
+                      background: #f8f9fa;
+                  }
+                  .total-section {
+                      text-align: right;
+                      margin-top: 30px;
+                      padding-top: 20px;
+                      border-top: 2px solid #2c3e50;
+                  }
+                  .grand-total {
+                      font-size: 24px;
+                      font-weight: bold;
+                      color: #2c3e50;
+                      margin-top: 10px;
+                  }
+                  .footer {
+                      margin-top: 40px;
+                      padding-top: 20px;
+                      border-top: 1px solid #ddd;
+                      font-size: 0.9em;
+                      color: #6c757d;
+                      text-align: center;
+                  }
+                  @media print {
+                      body { padding: 15px; }
+                  }
+              </style>
 															</head>
 															<body>
 																<div class="header">
 																	<h1>Kee Hup Quotation</h1>
 																	<div class="date">
-                            Date: ${new Date().toLocaleDateString('en-MY')} | 
-                            Time: ${new Date().toLocaleTimeString('en-MY', { hour: '2-digit', minute: '2-digit' })}
-                        </div>
+                      Date: ${new Date().toLocaleDateString('en-MY')} | 
+                      Time: ${new Date().toLocaleTimeString('en-MY', { hour: '2-digit', minute: '2-digit' })}
+                  </div>
 																</div>
+              
+              ${notes ? `
+              
+																
+																<div class="notes-box">
+																	<div style="font-weight: bold; color: #856404; font-size: 16px; margin-bottom: 10px;">
+                      📝 Notes:
+                  </div>
+																	<div style="white-space: pre-line; line-height: 1.5;">${notes}</div>
+																</div>
+              ` : ''}
+              
+              
+																
 																<table>
 																	<thead>
 																		<tr>
@@ -826,9 +843,8 @@ e.g., Install at location: Ground floor lobby" rows="4"></textarea>
 																		</tr>
 																	</thead>
 																	<tbody>
-                            ${items.map(item => `
-                                
-																		
+                      ${items.map(item => `
+                          
 																		
 																		<tr>
 																			<td>${item.name}</td>
@@ -837,22 +853,20 @@ e.g., Install at location: Ground floor lobby" rows="4"></textarea>
 																			<td>RM ${item.price.toFixed(2)}/${item.unit}</td>
 																			<td>RM ${item.subtotal.toFixed(2)}</td>
 																		</tr>
-                            `).join('')}
-                        
-																	
+                      `).join('')}
+                  
 																	
 																	</tbody>
 																</table>
 																<div class="total-section">
 																	<div style="font-size: 18px; margin-bottom: 10px;">
-                            Subtotal: 
-																		
+                      Subtotal: 
 																		
 																		<strong>RM ${items.reduce((s, i) => s + i.subtotal, 0).toFixed(2)}</strong>
 																	</div>
 																	<div class="grand-total">
-                            GRAND TOTAL: RM ${items.reduce((s, i) => s + i.subtotal, 0).toFixed(2)}
-                        </div>
+                      GRAND TOTAL: RM ${items.reduce((s, i) => s + i.subtotal, 0).toFixed(2)}
+                  </div>
 																</div>
 																<div class="footer">
 																	<p>Generated by Kee Hup Calculator</p>
@@ -860,7 +874,7 @@ e.g., Install at location: Ground floor lobby" rows="4"></textarea>
 																</div>
 															</body>
 														</html>
-            `;
+      `;
         const printWindow = window.open('', '_blank');
         printWindow.document.write(printContent);
         printWindow.document.close();
@@ -868,7 +882,7 @@ e.g., Install at location: Ground floor lobby" rows="4"></textarea>
         setTimeout(() => {
           printWindow.print();
           printWindow.close();
-        }, 250);
+        }, 500);
       }
       // 事件监听
       categoryBtns.forEach(btn => {
@@ -892,7 +906,6 @@ e.g., Install at location: Ground floor lobby" rows="4"></textarea>
       // 初始化应用
       init();
       console.log('🖨️ Printing Calculator ready!');
-      console.log('Materials: Tarpaulin Solvent (RM2/sqft), Tarpaulin UV (RM4/sqft), Design Fees (RM80/min)');
     </script>
   </body>
 </html>
