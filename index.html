@@ -570,7 +570,7 @@
                             Design Fees
                         </div>
                         <div class="price-row">
-                            <div class="price-label">Price per minute:</div>
+                            <div class="price-label">Price per minimum:</div>
                             <div class="price-input-group">
                                 <input type="number" id="priceDesign" class="price-input" 
                                        step="5" value="80.00" min="0">
@@ -869,7 +869,7 @@ e.g., Special discount applied"></textarea>
             
             if (materialType === 'design-fees') {
                 quantity = width; // 使用宽度作为分钟数
-                unit = 'minute(s)';
+                unit = 'minimum';
                 sizeDisplay = `${quantity} min`;
             } else {
                 quantity = width * height;
