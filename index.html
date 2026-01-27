@@ -607,24 +607,6 @@
                     
                     <div class="price-card">
                         <div class="material-name">
-                            <span class="material-icon">🔲</span>
-                            Metal Sign
-                        </div>
-                        <div class="price-row">
-                            <div class="price-label">Price per sqft:</div>
-                            <div class="price-input-group">
-                                <input type="number" id="priceMS" class="price-input" 
-                                       step="1" value="25.00" min="0">
-                                <span class="currency">RM</span>
-                            </div>
-                        </div>
-                        <div class="min-price-hint">
-                            ⚠️ Minimum RM 30 per item
-                        </div>
-                    </div>
-                    
-                    <div class="price-card">
-                        <div class="material-name">
                             <span class="material-icon">🎨</span>
                             Design Fees
                         </div>
@@ -680,7 +662,6 @@
                     <select id="materialType">
                         <option value="tarpaulin-solvent">Tarpaulin Solvent</option>
                         <option value="tarpaulin-uv">Tarpaulin UV</option>
-                        <option value="metalsign">Metal Sign</option>
                         <option value="design-fees">Design Fees</option>
                         <option value="custom">➕ Custom Material</option>
                     </select>
@@ -776,20 +757,17 @@ e.g., Special discount applied"></textarea>
             'standard': {  // 标准价格
                 'tarpaulin-solvent': 2.00,
                 'tarpaulin-uv': 4.00,
-                'metalsign': 25.00,
                 'design-fees': 80.00
             },
             'regular': {   // 常客价格
-                'tarpaulin-solvent': 2.00,
+                'tarpaulin-solvent': 1.80,
                 'tarpaulin-uv': 3.50,
-                'metalsign': 23.00,
-                'design-fees': 50.00
+                'design-fees': 70.00
             },
             'vip': {       // VIP价格
-                'tarpaulin-solvent': 2.00,
+                'tarpaulin-solvent': 1.70,
                 'tarpaulin-uv': 3.50,
-                'metalsign': 23.00,
-                'design-fees': 50.00
+                'design-fees': 65.00
             }
         };
         
@@ -809,7 +787,6 @@ e.g., Special discount applied"></textarea>
         const customerTabs = document.getElementById('customerTabs');
         const priceSolventInput = document.getElementById('priceSolvent');
         const priceUVInput = document.getElementById('priceUV');
-        const priceMSInput = document.getElementById('priceMS');
         const priceDesignInput = document.getElementById('priceDesign');
         const currentPricingSpan = document.getElementById('currentPricing');
         const materialTypeSelect = document.getElementById('materialType');
@@ -844,7 +821,7 @@ e.g., Special discount applied"></textarea>
             });
             
             // 价格输入变化时保存
-            [priceSolventInput, priceUVInput, priceMSInput, priceDesignInput].forEach(input => {
+            [priceSolventInput, priceUVInput, priceDesignInput].forEach(input => {
                 input.addEventListener('input', function() {
                     saveCurrentPrices();
                 });
@@ -923,7 +900,6 @@ e.g., Special discount applied"></textarea>
             
             priceSolventInput.value = prices['tarpaulin-solvent'].toFixed(2);
             priceUVInput.value = prices['tarpaulin-uv'].toFixed(2);
-            priceMSInput.value = prices['metalsign'].toFixed(2);
             priceDesignInput.value = prices['design-fees'].toFixed(2);
         }
         
@@ -932,7 +908,6 @@ e.g., Special discount applied"></textarea>
             priceConfig[currentCustomerType] = {
                 'tarpaulin-solvent': parseFloat(priceSolventInput.value) || 0,
                 'tarpaulin-uv': parseFloat(priceUVInput.value) || 0,
-                'metalsign': parseFloat(priceMSInput.value) || 0,
                 'design-fees': parseFloat(priceDesignInput.value) || 0
             };
             
@@ -969,8 +944,6 @@ e.g., Special discount applied"></textarea>
                     return prices['tarpaulin-solvent'];
                 case 'tarpaulin-uv':
                     return prices['tarpaulin-uv'];
-                case 'metalsign':
-                    return prices['metalsign'];
                 case 'design-fees':
                     return prices['design-fees'];
                 case 'custom':
@@ -1024,12 +997,6 @@ e.g., Special discount applied"></textarea>
                 unit = 'cm/line';
                 quantity = width * height; // 平方厘米
                 sizeDisplay = `${width.toFixed(1)} × ${height.toFixed(1)} cm/line`;
-            } else if (materialType === 'metalsign') {
-                materialName = 'Metal Sign';
-                unitPrice = getCurrentPrice(materialType);
-                unit = 'sqft';
-                quantity = width * height;
-                sizeDisplay = 'Metal Sign';
             } else if (materialType === 'design-fees') {
                 materialName = 'Design Fees';
                 unitPrice = getCurrentPrice(materialType);
@@ -1050,7 +1017,7 @@ e.g., Special discount applied"></textarea>
             // 应用最低收费
             if (materialType === 'custom' && subtotal < MIN_CUSTOM_CHARGE) {
                 subtotal = MIN_CUSTOM_CHARGE;
-            } else if ((materialType === 'tarpaulin-solvent' || materialType === 'tarpaulin-uv'|| materialType === 'metalsign') && subtotal < MIN_TARPAULIN_CHARGE) {
+            } else if ((materialType === 'tarpaulin-solvent' || materialType === 'tarpaulin-uv') && subtotal < MIN_TARPAULIN_CHARGE) {
                 subtotal = MIN_TARPAULIN_CHARGE;
             }
             
