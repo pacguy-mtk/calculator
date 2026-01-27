@@ -621,23 +621,6 @@
                         <div class="min-price-hint">
                             ✅ Can be RM 0 (customer's design)
                         </div>
-                        <div class="price-card">
-                        <div class="material-name">
-                            <span class="material-icon"></span>
-                            CUSTOMIZE
-                        </div>
-                        <div class="price-row">
-                            <div class="price-label">Price per sqft:</div>
-                            <div class="price-input-group">
-                                <input type="number" id="priceCUSTOMIZE" class="price-input" 
-                                       step="1" value="25.00" min="0">
-                                <span class="currency">RM</span>
-                            </div>
-                        </div>
-                        <div class="min-price-hint">
-                            ⚠️ UV Sticker, Latex Sticker for metal surface
-                        </div>
-                    </div>
                     </div>
                 </div>
                 
@@ -681,7 +664,6 @@
                         <option value="tarpaulin-uv">Tarpaulin UV</option>
                         <option value="design-fees">Design Fees</option>
                         <option value="custom">➕ Custom Material</option>
-                        <option value="custom">CUSTOMIZE</option>
                     </select>
                 </div>
             </div>
@@ -1022,7 +1004,7 @@ e.g., Special discount applied"></textarea>
                 quantity = 1; // 设计费按最低收费计算
                 sizeDisplay = 'Design Service';
             } else {
-                materialName = materialType === 'tarpaulin-solvent' ? 'Tarpaulin Solvent' : 'Tarpaulin UV' : 'CUSTOMIZE';
+                materialName = materialType === 'tarpaulin-solvent' ? 'Tarpaulin Solvent' : 'Tarpaulin UV';
                 unitPrice = getCurrentPrice(materialType);
                 unit = 'sqft';
                 quantity = width * height;
