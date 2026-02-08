@@ -541,6 +541,144 @@
             align-items: center;
             gap: 8px;
         }
+        
+        /* ========== 新添加的样式 ========== */
+        
+        /* 近似值计算开关 */
+        .rounding-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            padding: 10px;
+            background: #e8f5e9;
+            border-radius: 6px;
+            border: 1px solid #4caf50;
+        }
+        
+        .rounding-toggle label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #2e7d32;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #4caf50;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        /* 3D LED专用计算器 */
+        .led-calculator {
+            background: #f3e5f5;
+            border: 2px solid #9c27b0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        
+        .led-calculator.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .led-input-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .led-result {
+            background: #fff;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #e1bee7;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+        
+        .led-result span {
+            color: #9c27b0;
+            font-weight: bold;
+        }
+        
+        .calculator-info {
+            background: #fff8e1;
+            border: 1px solid #ffd54f;
+            border-radius: 6px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: #5d4037;
+        }
+        
+        .calculator-info ul {
+            margin: 5px 0 5px 20px;
+            padding: 0;
+        }
+        
+        .calculator-info li {
+            margin-bottom: 3px;
+        }
+        
+        /* 近似值指示器 */
+        .rounded-badge {
+            background: #4caf50;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+        
+        .original-price {
+            text-decoration: line-through;
+            color: #999;
+            margin-right: 5px;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
@@ -607,6 +745,82 @@
                     
                     <div class="price-card">
                         <div class="material-name">
+                            <span class="material-icon">💡</span>
+                            3D LED Letter
+                        </div>
+                        <div class="price-row">
+                            <div class="price-label">Price per cm:</div>
+                            <div class="price-input-group">
+                                <input type="number" id="priceLed3d" class="price-input" 
+                                       step="0.10" value="6.00" min="0">
+                                <span class="currency">RM</span>
+                            </div>
+                        </div>
+                        <!-- 近似值计算开关 -->
+                        <div class="rounding-toggle">
+                            <label>Use Approximate Pricing:</label>
+                            <div class="switch">
+                                <input type="checkbox" id="roundingLed3d" checked>
+                                <span class="slider"></span>
+                            </div>
+                        </div>
+                        <div class="min-price-hint">
+                            ⚠️ Round to nearest RM (e.g., 67.50 → 68.00)
+                        </div>
+                    </div>
+                    
+                    <div class="price-card">
+                        <div class="material-name">
+                            <span class="material-icon">🌈</span>
+                            3D LED Letter with UV Sticker
+                        </div>
+                        <div class="price-row">
+                            <div class="price-label">Price per cm:</div>
+                            <div class="price-input-group">
+                                <input type="number" id="priceLed3dUv" class="price-input" 
+                                       step="0.10" value="7.00" min="0">
+                                <span class="currency">RM</span>
+                            </div>
+                        </div>
+                        <div class="rounding-toggle">
+                            <label>Use Approximate Pricing:</label>
+                            <div class="switch">
+                                <input type="checkbox" id="roundingLed3dUv" checked>
+                                <span class="slider"></span>
+                            </div>
+                        </div>
+                        <div class="min-price-hint">
+                            ⚠️ Round to nearest RM (e.g., 87.50 → 88.00)
+                        </div>
+                    </div>
+                    
+                    <div class="price-card">
+                        <div class="material-name">
+                            <span class="material-icon">💰</span>
+                            3D LED Letter Special Price
+                        </div>
+                        <div class="price-row">
+                            <div class="price-label">Price per cm:</div>
+                            <div class="price-input-group">
+                                <input type="number" id="priceLed3dSpecial" class="price-input" 
+                                       step="0.10" value="4.50" min="0">
+                                <span class="currency">RM</span>
+                            </div>
+                        </div>
+                        <div class="rounding-toggle">
+                            <label>Use Approximate Pricing:</label>
+                            <div class="switch">
+                                <input type="checkbox" id="roundingLed3dSpecial" checked>
+                                <span class="slider"></span>
+                            </div>
+                        </div>
+                        <div class="min-price-hint">
+                            ⚠️ Special discounted rate
+                        </div>
+                    </div>
+                    
+                    <div class="price-card">
+                        <div class="material-name">
                             <span class="material-icon">🎨</span>
                             Design Fees
                         </div>
@@ -662,13 +876,52 @@
                     <select id="materialType">
                         <option value="tarpaulin-solvent">Tarpaulin Solvent</option>
                         <option value="tarpaulin-uv">Tarpaulin UV</option>
+                        <option value="led-3d">3D LED Letter</option>
+                        <option value="led-3d-uv">3D LED Letter with UV Sticker</option>
+                        <option value="led-3d-special">3D LED Letter Special Price</option>
                         <option value="design-fees">Design Fees</option>
                         <option value="custom">➕ Custom Material</option>
                     </select>
                 </div>
             </div>
             
-            <!-- 自定义材料区域（默认隐藏） -->
+            <!-- 3D LED专用计算器 -->
+            <div class="led-calculator" id="ledCalculator">
+                <div class="led-input-row">
+                    <div class="input-group">
+                        <label for="ledHeight">Letter Height (cm)</label>
+                        <input type="number" id="ledHeight" 
+                               placeholder="e.g., 15" min="1" value="15" step="0.5">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="ledQuantity">Quantity (units)</label>
+                        <input type="number" id="ledQuantity" 
+                               placeholder="e.g., 22" min="1" value="1" step="1">
+                    </div>
+                </div>
+                
+                <div class="led-result" id="ledPreview">
+                    <strong>Calculation:</strong><br>
+                    <span id="calculationDetail">15 cm × RM 4.50 = RM 67.50</span><br>
+                    <span id="roundedDetail">Rounded to: RM 68.00</span><br>
+                    <span id="finalDetail">× 22 units = <strong>RM 1,496.00</strong></span>
+                </div>
+                
+                <div class="calculator-info">
+                    <strong>📝 How 3D LED pricing works:</strong>
+                    <ul>
+                        <li>Price = Letter Height (cm) × Price per cm</li>
+                        <li>Result rounded to nearest RM (e.g., 67.50 → 68.00)</li>
+                        <li>Then multiplied by quantity</li>
+                    </ul>
+                    <div style="margin-top: 5px;">
+                        <strong>Example:</strong> 15cm × RM4.50 = RM67.50 → RM68 × 22 units = RM1,496
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 自定义材料区域 -->
             <div class="custom-material-section" id="customMaterialSection">
                 <div class="custom-input-row">
                     <div class="input-group">
@@ -757,22 +1010,42 @@ e.g., Special discount applied"></textarea>
             'standard': {  // 标准价格
                 'tarpaulin-solvent': 2.00,
                 'tarpaulin-uv': 4.00,
+                'led-3d': 6.00,
+                'led-3d-uv': 7.00,
+                'led-3d-special': 4.50,
                 'design-fees': 80.00
             },
             'regular': {   // 常客价格
                 'tarpaulin-solvent': 1.80,
                 'tarpaulin-uv': 3.50,
+                'led-3d': 5.50,
+                'led-3d-uv': 6.50,
+                'led-3d-special': 4.00,
                 'design-fees': 70.00
             },
             'vip': {       // VIP价格
                 'tarpaulin-solvent': 1.70,
                 'tarpaulin-uv': 3.50,
+                'led-3d': 5.00,
+                'led-3d-uv': 6.00,
+                'led-3d-special': 3.80,
                 'design-fees': 65.00
             }
         };
         
         // 当前价格配置（从localStorage加载或使用默认值）
         let priceConfig = JSON.parse(localStorage.getItem('keehup_prices')) || { ...defaultPrices };
+        
+        // 近似值配置
+        const defaultRoundingConfig = {
+            'led-3d': true,
+            'led-3d-uv': true,
+            'led-3d-special': true
+        };
+        
+        // 加载保存的近似值设置
+        const savedRounding = JSON.parse(localStorage.getItem('keehup_rounding'));
+        let roundingConfig = savedRounding ? { ...defaultRoundingConfig, ...savedRounding } : { ...defaultRoundingConfig };
         
         let currentCustomerType = 'standard';
         let items = [];
@@ -788,11 +1061,67 @@ e.g., Special discount applied"></textarea>
         const priceSolventInput = document.getElementById('priceSolvent');
         const priceUVInput = document.getElementById('priceUV');
         const priceDesignInput = document.getElementById('priceDesign');
+        const priceLed3dInput = document.getElementById('priceLed3d');
+        const priceLed3dUvInput = document.getElementById('priceLed3dUv');
+        const priceLed3dSpecialInput = document.getElementById('priceLed3dSpecial');
         const currentPricingSpan = document.getElementById('currentPricing');
         const materialTypeSelect = document.getElementById('materialType');
         const customMaterialSection = document.getElementById('customMaterialSection');
+        const ledCalculator = document.getElementById('ledCalculator');
         
-        // 初始化价格系统
+        // ==================== 3D LED计算函数 ====================
+        
+        function calculate3DLedPrice(materialType) {
+            const height = parseFloat(document.getElementById('ledHeight').value) || 0;
+            const quantity = parseInt(document.getElementById('ledQuantity').value) || 0;
+            
+            if (height <= 0 || quantity <= 0) return 0;
+            
+            const pricePerCm = getCurrentPrice(materialType);
+            const exactPrice = height * pricePerCm;
+            const useRounding = roundingConfig[materialType];
+            
+            // 应用近似值计算
+            let roundedPrice;
+            if (useRounding) {
+                // 四舍五入到最接近的整数
+                roundedPrice = Math.round(exactPrice);
+            } else {
+                // 保留两位小数
+                roundedPrice = Math.round(exactPrice * 100) / 100;
+            }
+            
+            const total = roundedPrice * quantity;
+            
+            // 更新预览
+            const materialNames = {
+                'led-3d': '3D LED Letter',
+                'led-3d-uv': '3D LED Letter with UV Sticker',
+                'led-3d-special': '3D LED Letter Special Price'
+            };
+            
+            const previewHTML = `
+                <strong>Calculation for ${materialNames[materialType]}:</strong><br>
+                <span id="calculationDetail">${height.toFixed(1)} cm × RM ${pricePerCm.toFixed(2)} = RM ${exactPrice.toFixed(2)}</span><br>
+                ${useRounding ? 
+                    `<span id="roundedDetail">Rounded to: <strong>RM ${roundedPrice.toFixed(2)}</strong></span><br>` : 
+                    `<span id="roundedDetail">Exact price: RM ${roundedPrice.toFixed(2)}</span><br>`}
+                <span id="finalDetail">× ${quantity} units = <strong>RM ${total.toFixed(2)}</strong></span>
+            `;
+            
+            document.getElementById('ledPreview').innerHTML = previewHTML;
+            
+            return {
+                exactPrice,
+                roundedPrice,
+                total,
+                height,
+                quantity
+            };
+        }
+        
+        // ==================== 初始化价格系统 ====================
+        
         function initPriceSystem() {
             // 加载保存的价格配置
             loadPriceConfig();
@@ -821,7 +1150,7 @@ e.g., Special discount applied"></textarea>
             });
             
             // 价格输入变化时保存
-            [priceSolventInput, priceUVInput, priceDesignInput].forEach(input => {
+            [priceSolventInput, priceUVInput, priceDesignInput, priceLed3dInput, priceLed3dUvInput, priceLed3dSpecialInput].forEach(input => {
                 input.addEventListener('input', function() {
                     saveCurrentPrices();
                 });
@@ -845,8 +1174,14 @@ e.g., Special discount applied"></textarea>
         function updateMaterialType() {
             const selectedType = materialTypeSelect.value;
             
-            if (selectedType === 'custom') {
+            // 显示/隐藏3D LED计算器
+            if (selectedType === 'led-3d' || selectedType === 'led-3d-uv' || selectedType === 'led-3d-special') {
+                ledCalculator.classList.add('active');
+                customMaterialSection.classList.remove('active');
+                update3DLedCalculator();
+            } else if (selectedType === 'custom') {
                 // 显示自定义材料区域
+                ledCalculator.classList.remove('active');
                 customMaterialSection.classList.add('active');
                 
                 // 更新尺寸提示
@@ -857,7 +1192,8 @@ e.g., Special discount applied"></textarea>
                 document.getElementById('width').placeholder = 'Width (cm)';
                 document.getElementById('height').placeholder = 'Height (unit)';
             } else {
-                // 隐藏自定义材料区域
+                // 隐藏所有特殊计算器
+                ledCalculator.classList.remove('active');
                 customMaterialSection.classList.remove('active');
                 
                 // 恢复平方英尺显示
@@ -884,6 +1220,14 @@ e.g., Special discount applied"></textarea>
             }
         }
         
+        // 更新3D LED计算器
+        function update3DLedCalculator() {
+            const selectedType = materialTypeSelect.value;
+            if (selectedType === 'led-3d' || selectedType === 'led-3d-uv' || selectedType === 'led-3d-special') {
+                calculate3DLedPrice(selectedType);
+            }
+        }
+        
         // 加载价格配置
         function loadPriceConfig() {
             // 确保每种客户类型都有完整的配置
@@ -900,6 +1244,9 @@ e.g., Special discount applied"></textarea>
             
             priceSolventInput.value = prices['tarpaulin-solvent'].toFixed(2);
             priceUVInput.value = prices['tarpaulin-uv'].toFixed(2);
+            priceLed3dInput.value = prices['led-3d'].toFixed(2);
+            priceLed3dUvInput.value = prices['led-3d-uv'].toFixed(2);
+            priceLed3dSpecialInput.value = prices['led-3d-special'].toFixed(2);
             priceDesignInput.value = prices['design-fees'].toFixed(2);
         }
         
@@ -908,6 +1255,9 @@ e.g., Special discount applied"></textarea>
             priceConfig[currentCustomerType] = {
                 'tarpaulin-solvent': parseFloat(priceSolventInput.value) || 0,
                 'tarpaulin-uv': parseFloat(priceUVInput.value) || 0,
+                'led-3d': parseFloat(priceLed3dInput.value) || 0,
+                'led-3d-uv': parseFloat(priceLed3dUvInput.value) || 0,
+                'led-3d-special': parseFloat(priceLed3dSpecialInput.value) || 0,
                 'design-fees': parseFloat(priceDesignInput.value) || 0
             };
             
@@ -930,27 +1280,42 @@ e.g., Special discount applied"></textarea>
         // 保存设置到本地
         function saveSettings() {
             saveCurrentPrices();
+            saveRoundingConfig();
             alert('Price settings saved successfully!');
+        }
+        
+        // ==================== 近似值设置 ====================
+        
+        function loadRoundingSettings() {
+            document.getElementById('roundingLed3d').checked = roundingConfig['led-3d'];
+            document.getElementById('roundingLed3dUv').checked = roundingConfig['led-3d-uv'];
+            document.getElementById('roundingLed3dSpecial').checked = roundingConfig['led-3d-special'];
+        }
+        
+        function saveRoundingConfig() {
+            localStorage.setItem('keehup_rounding', JSON.stringify(roundingConfig));
         }
         
         // ==================== 项目管理系统 ====================
         
+        // 获取材料显示名称
+        function getMaterialDisplayName(materialType) {
+            const names = {
+                'tarpaulin-solvent': 'Tarpaulin Solvent',
+                'tarpaulin-uv': 'Tarpaulin UV',
+                'led-3d': '3D LED Letter',
+                'led-3d-uv': '3D LED Letter with UV Sticker',
+                'led-3d-special': '3D LED Letter Special Price',
+                'design-fees': 'Design Fees',
+                'custom': 'Custom Material'
+            };
+            return names[materialType] || materialType;
+        }
+        
         // 获取当前价格
         function getCurrentPrice(materialType) {
             const prices = priceConfig[currentCustomerType];
-            
-            switch(materialType) {
-                case 'tarpaulin-solvent':
-                    return prices['tarpaulin-solvent'];
-                case 'tarpaulin-uv':
-                    return prices['tarpaulin-uv'];
-                case 'design-fees':
-                    return prices['design-fees'];
-                case 'custom':
-                    return parseFloat(document.getElementById('customUnitPrice').value) || 0;
-                default:
-                    return 0;
-            }
+            return prices[materialType] || 0;
         }
         
         // 计算面积
@@ -963,6 +1328,9 @@ e.g., Special discount applied"></textarea>
                 // 自定义材料按厘米计算
                 const areaCm = (width * height).toFixed(2);
                 return parseFloat(areaCm);
+            } else if (materialType === 'led-3d' || materialType === 'led-3d-uv' || materialType === 'led-3d-special') {
+                // 3D LED材料使用专用计算器
+                return 0;
             } else {
                 // 普通材料按平方英尺计算
                 const totalSqft = (width * height).toFixed(2);
@@ -983,42 +1351,65 @@ e.g., Special discount applied"></textarea>
                 return;
             }
             
-            if (materialType !== 'design-fees' && materialType !== 'custom' && (width <= 0 || height <= 0)) {
-                alert('Please enter valid dimensions');
-                return;
-            }
-            
             // 获取当前价格和材料名称
-            let unitPrice, materialName, unit, quantity, sizeDisplay;
+            let unitPrice, materialName, unit, quantity, sizeDisplay, subtotal;
             
-            if (materialType === 'custom') {
-                materialName = document.getElementById('customMaterialName').value.trim() || 'Custom Material';
+            // 如果是3D LED材料，使用专用计算器
+            if (materialType === 'led-3d' || materialType === 'led-3d-uv' || materialType === 'led-3d-special') {
+                const ledHeight = parseFloat(document.getElementById('ledHeight').value) || 0;
+                const ledQuantity = parseInt(document.getElementById('ledQuantity').value) || 0;
+                
+                if (ledHeight <= 0) {
+                    alert('Please enter letter height');
+                    return;
+                }
+                
+                if (ledQuantity <= 0) {
+                    alert('Please enter quantity');
+                    return;
+                }
+                
+                const calculation = calculate3DLedPrice(materialType);
                 unitPrice = getCurrentPrice(materialType);
+                materialName = getMaterialDisplayName(materialType);
+                unit = 'units';
+                quantity = ledQuantity;
+                sizeDisplay = `${ledHeight.toFixed(1)} cm height × ${ledQuantity} units`;
+                subtotal = calculation.total;
+                
+            } else if (materialType === 'custom') {
+                materialName = document.getElementById('customMaterialName').value.trim() || 'Custom Material';
+                unitPrice = parseFloat(document.getElementById('customUnitPrice').value) || 0;
                 unit = 'cm/line';
                 quantity = width * height; // 平方厘米
                 sizeDisplay = `${width.toFixed(1)} × ${height.toFixed(1)} cm/line`;
+                subtotal = quantity * unitPrice;
+                
+                // 应用最低收费
+                if (subtotal < MIN_CUSTOM_CHARGE) {
+                    subtotal = MIN_CUSTOM_CHARGE;
+                }
+                
             } else if (materialType === 'design-fees') {
                 materialName = 'Design Fees';
                 unitPrice = getCurrentPrice(materialType);
                 unit = 'minimum';
                 quantity = 1; // 设计费按最低收费计算
                 sizeDisplay = 'Design Service';
+                subtotal = unitPrice;
+                
             } else {
-                materialName = materialType === 'tarpaulin-solvent' ? 'Tarpaulin Solvent' : 'Tarpaulin UV';
+                materialName = getMaterialDisplayName(materialType);
                 unitPrice = getCurrentPrice(materialType);
                 unit = 'sqft';
                 quantity = width * height;
                 sizeDisplay = `${width.toFixed(1)} × ${height.toFixed(1)} ft`;
-            }
-            
-            // 计算小计
-            let subtotal = quantity * unitPrice;
-            
-            // 应用最低收费
-            if (materialType === 'custom' && subtotal < MIN_CUSTOM_CHARGE) {
-                subtotal = MIN_CUSTOM_CHARGE;
-            } else if ((materialType === 'tarpaulin-solvent' || materialType === 'tarpaulin-uv') && subtotal < MIN_TARPAULIN_CHARGE) {
-                subtotal = MIN_TARPAULIN_CHARGE;
+                subtotal = quantity * unitPrice;
+                
+                // 应用最低收费
+                if (subtotal < MIN_TARPAULIN_CHARGE) {
+                    subtotal = MIN_TARPAULIN_CHARGE;
+                }
             }
             
             // 创建项目对象
@@ -1035,6 +1426,15 @@ e.g., Special discount applied"></textarea>
                 customerType: currentCustomerType
             };
             
+            // 如果是3D LED材料，添加额外信息
+            if (materialType === 'led-3d' || materialType === 'led-3d-uv' || materialType === 'led-3d-special') {
+                const ledHeight = parseFloat(document.getElementById('ledHeight').value) || 0;
+                const calculation = calculate3DLedPrice(materialType);
+                item.height = ledHeight;
+                item.roundedPrice = calculation.roundedPrice;
+                item.isRounded = roundingConfig[materialType];
+            }
+            
             // 添加到列表
             items.push(item);
             
@@ -1043,16 +1443,26 @@ e.g., Special discount applied"></textarea>
             updateTotals();
             
             // 重置表单
+            resetForm();
+            
+            console.log(`Added: ${name} - RM ${subtotal.toFixed(2)}`);
+        }
+        
+        // 重置表单
+        function resetForm() {
             document.getElementById('itemName').value = '';
             document.getElementById('width').value = 1;
             document.getElementById('height').value = 1;
+            document.getElementById('ledHeight').value = 15;
+            document.getElementById('ledQuantity').value = 1;
             
-            if (materialType === 'custom') {
+            if (materialTypeSelect.value === 'custom') {
                 document.getElementById('customMaterialName').value = '';
                 document.getElementById('customUnitPrice').value = '0.20';
             }
             
-            console.log(`Added: ${name} - RM ${subtotal.toFixed(2)}`);
+            // 重新计算面积
+            calculateArea();
         }
         
         // 渲染项目列表
@@ -1074,19 +1484,50 @@ e.g., Special discount applied"></textarea>
             items.forEach(item => {
                 const row = document.createElement('div');
                 row.className = 'item-row';
-                row.innerHTML = `
-                    <div>
-                        <strong>${item.name}</strong>
-                        <div style="font-size: 0.9rem; color: #666;">${item.materialName}</div>
-                    </div>
-                    <div>${item.sizeDisplay}</div>
-                    <div>${item.quantity.toFixed(2)} ${item.unit}</div>
-                    <div>RM ${item.unitPrice.toFixed(2)}</div>
-                    <div><strong>RM ${item.subtotal.toFixed(2)}</strong></div>
-                    <div>
-                        <button class="delete-btn" onclick="deleteItem(${item.id})">×</button>
-                    </div>
-                `;
+                
+                // 如果是3D LED材料，显示详细信息
+                if (item.materialType === 'led-3d' || item.materialType === 'led-3d-uv' || item.materialType === 'led-3d-special') {
+                    const originalPrice = item.height * item.unitPrice;
+                    const roundedBadge = item.isRounded ? 
+                        `<span class="rounded-badge">Rounded</span>` : '';
+                    
+                    row.innerHTML = `
+                        <div>
+                            <strong>${item.name}</strong>
+                            <div style="font-size: 0.9rem; color: #666;">
+                                ${item.materialName} ${roundedBadge}
+                            </div>
+                        </div>
+                        <div>${item.sizeDisplay}</div>
+                        <div>${item.quantity} ${item.unit}</div>
+                        <div>
+                            <div>${item.height.toFixed(1)} cm × RM ${item.unitPrice.toFixed(2)}</div>
+                            <div style="font-size: 0.8rem; color: #666;">
+                                <span class="original-price">RM ${originalPrice.toFixed(2)}</span>
+                                → RM ${item.roundedPrice.toFixed(2)}
+                            </div>
+                        </div>
+                        <div><strong>RM ${item.subtotal.toFixed(2)}</strong></div>
+                        <div>
+                            <button class="delete-btn" onclick="deleteItem(${item.id})">×</button>
+                        </div>
+                    `;
+                } else {
+                    row.innerHTML = `
+                        <div>
+                            <strong>${item.name}</strong>
+                            <div style="font-size: 0.9rem; color: #666;">${item.materialName}</div>
+                        </div>
+                        <div>${item.sizeDisplay}</div>
+                        <div>${item.quantity.toFixed(2)} ${item.unit}</div>
+                        <div>RM ${item.unitPrice.toFixed(2)}</div>
+                        <div><strong>RM ${item.subtotal.toFixed(2)}</strong></div>
+                        <div>
+                            <button class="delete-btn" onclick="deleteItem(${item.id})">×</button>
+                        </div>
+                    `;
+                }
+                
                 itemsList.appendChild(row);
             });
         }
@@ -1230,6 +1671,37 @@ e.g., Special discount applied"></textarea>
             document.getElementById('saveBtn').addEventListener('click', saveSettings);
             document.getElementById('resetBtn').addEventListener('click', resetQuote);
             
+            // 3D LED计算器事件
+            document.getElementById('ledHeight').addEventListener('input', function() {
+                update3DLedCalculator();
+            });
+            
+            document.getElementById('ledQuantity').addEventListener('input', function() {
+                update3DLedCalculator();
+            });
+            
+            // 近似值开关事件
+            document.getElementById('roundingLed3d').addEventListener('change', function() {
+                roundingConfig['led-3d'] = this.checked;
+                saveRoundingConfig();
+                update3DLedCalculator();
+            });
+            
+            document.getElementById('roundingLed3dUv').addEventListener('change', function() {
+                roundingConfig['led-3d-uv'] = this.checked;
+                saveRoundingConfig();
+                update3DLedCalculator();
+            });
+            
+            document.getElementById('roundingLed3dSpecial').addEventListener('change', function() {
+                roundingConfig['led-3d-special'] = this.checked;
+                saveRoundingConfig();
+                update3DLedCalculator();
+            });
+            
+            // 加载近似值设置
+            loadRoundingSettings();
+            
             // 初始计算
             calculateArea();
             renderItems();
@@ -1246,7 +1718,7 @@ e.g., Special discount applied"></textarea>
             });
             
             console.log('✅ Kee Hup Quotation System Ready!');
-            console.log('Features: Custom material option, flexible pricing, centimeter calculation.');
+            console.log('Features: 3D LED calculator, custom materials, flexible pricing.');
         }
         
         // 页面加载完成时初始化
@@ -1254,7 +1726,6 @@ e.g., Special discount applied"></textarea>
         
         // 导出函数供按钮使用
         window.deleteItem = deleteItem;
-        
     </script>
 </body>
 </html>
