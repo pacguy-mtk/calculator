@@ -685,9 +685,11 @@
             padding: 20px 30px;
             display: flex;
             align-items: center;
-            gap: 25px;
+            justify-content: center;
+            gap: 30px;
             color: white;
             border-bottom: 5px solid #e74c3c;
+            min-height: 150px;
         }
         .main-logo {
             height: 100px;
@@ -696,12 +698,21 @@
             padding: 8px;
             background: rgba(255,255,255,0.1);
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            flex-shrink: 0;
         }
         .main-banner {
-            height: 100px;
+            height: 120px;
             width: auto;
-            border-radius: 8px;
+            max-width: 500px;
+            border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            flex-shrink: 0;
+        .banner-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            width: 100%;
         }
 
     </style>
@@ -710,13 +721,11 @@
     <div class="container">
         <header>
             <header class="top-banner">
-                <div class="logo-container">
+                <div class="banner-container">
                     <img src="https://raw.githubusercontent.com/pacguy-mtk/calculator/refs/heads/main/z2026-02-08-13.12.11.jpeg"
                         alt="KH Sign Media Logo" class="main-logo">
-                </div>
-                <div class="banner-text">
                     <img src="https://raw.githubusercontent.com/pacguy-mtk/calculator/refs/heads/main/z726c97a9-adf4-4272-a92a-bedf76daaeee.jpg"
-                         alt="KH Sign Media Logo" class="main-banner">
+                        alt="KH Sign Media Banner" class="main-banner">
                 </div>
             <h1>KH Sign Media Quotation System</h1>
             <p class="subtitle">Practical & Flexible Pricing Calculator</p>
