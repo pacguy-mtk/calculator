@@ -683,22 +683,40 @@
         .top-banner {
             background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
             padding: 20px 30px;
+            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 30px;
             color: white;
             border-bottom: 5px solid #e74c3c;
-            min-height: 150px;
+            min-height: 200px;
+            overflow: hidden;
+        }
+        .banner-background {|
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('https://raw.githubusercontent.com/pacguy-mtk/calculator/refs/heads/main/z726c97a9-adf4-4272-a92a-bedf76daaeee.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.7;
+            z-index: 1
         }
         .main-logo {
-            height: 100px;
+            height: 120px;
             width: auto;
             border-radius: 10px;
             padding: 8px;
-            background: rgba(255,255,255,0.1);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            flex-shrink: 0;
+            background: rgba(255,255,255,0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            z-index: 2;
+            position: relative;
+            backdrop-filter: blur(5px);
+            border: 3px solid rgba(255,255,255,0.3);
         }
         .main-banner {
             height: 120px;
@@ -714,6 +732,24 @@
             gap: 30px;
             width: 100%;
         }
+        .banner-text {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            margin-left: 30px;
+        }
+        .banner-text h1 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            font-weight: 800;
+            text-shadow: 0 3px 6px rgba(0,0,0,0.5);
+        }
+        .banner-text .subtitle {
+            opacity: 0.9;
+            font-size: 1.1rem;
+            font-weight: 500;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
 
     </style>
 </head>
@@ -721,11 +757,13 @@
     <div class="container">
         <header>
             <header class="top-banner">
-                <div class="banner-container">
+                <div class="banner-background"></div>
+                <div style="display: flex; align-items: center; gap: 30px; position: relative; z-index: 2;">
                     <img src="https://raw.githubusercontent.com/pacguy-mtk/calculator/refs/heads/main/z2026-02-08-13.12.11.jpeg"
                         alt="KH Sign Media Logo" class="main-logo">
-                    <img src="https://raw.githubusercontent.com/pacguy-mtk/calculator/refs/heads/main/z726c97a9-adf4-4272-a92a-bedf76daaeee.jpg"
-                        alt="KH Sign Media Banner" class="main-banner">
+                <div class="banner-text">
+                    <h1>KH Sign Media</h1>
+                    <p class="subtitle">Professional Quotation System</p>
                 </div>
             <h1>KH Sign Media Quotation System</h1>
             <p class="subtitle">Practical & Flexible Pricing Calculator</p>
