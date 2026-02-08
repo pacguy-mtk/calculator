@@ -680,13 +680,47 @@
             margin-right: 5px;
             font-size: 0.9rem;
         }
+        .top-banner {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            color: white;
+            border-bottom: 5px solid #e74c3c;
+        }
+        .main-logo {
+            height: 70px;
+            width: auto;
+            border-radius: 10px;
+            padding: 5px;
+            background: rgba(255,255,255,0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .banner-text h1 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+        .banner-text p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+            
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <img src="https://raw.githubusercontent.com/pacguy-mtk/calculator/3104a253790a4b96d2a1e5ba72bc5d863d9064bb/2026-02-08-13.12.11.jpeg" 
-                 alt="KH Sign Media Logo" class="logo">
+            <header class="top-banner">
+                <div class="logo-container">
+                    <img src="https://raw.githubusercontent.com/pacguy-mtk/calculator/refs/heads/main/z2026-02-08-13.12.11.jpeg"
+                        alt="KH Sign Media Logo" class="main-logo">
+                </div>
+                <div class="banner-text">
+                    <h1>Kee Hup Enterprise</h1>
+                    <p>Professional Signage & Printing Solutions</p>
+                </div>
             <h1>KH Sign Media Quotation System</h1>
             <p class="subtitle">Practical & Flexible Pricing Calculator</p>
         </header>
