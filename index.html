@@ -1804,5 +1804,164 @@ e.g., Special discount applied"></textarea>
         // 导出函数供按钮使用
         window.deleteItem = deleteItem;
     </script>
+    <!-- KH AI Assistant Floating Chat -->
+
+<style>
+
+#kh-ai-button{
+position:fixed;
+bottom:25px;
+right:25px;
+width:64px;
+height:64px;
+border-radius:50%;
+background:white;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
+box-shadow:0 8px 25px rgba(0,0,0,0.25);
+z-index:9999;
+}
+
+/* ChatGPT logo */
+#kh-ai-button img{
+width:36px;
+height:36px;
+}
+
+/* Soul / pulse animation */
+#kh-ai-button::before{
+content:"";
+position:absolute;
+width:64px;
+height:64px;
+border-radius:50%;
+background:#10a37f;
+opacity:.4;
+animation:khPulse 2s infinite;
+z-index:-1;
+}
+
+@keyframes khPulse{
+0%{
+transform:scale(1);
+opacity:.6;
+}
+70%{
+transform:scale(1.8);
+opacity:0;
+}
+100%{
+opacity:0;
+}
+}
+
+/* Popup card */
+
+#kh-ai-popup{
+position:fixed;
+bottom:105px;
+right:25px;
+width:280px;
+background:white;
+border-radius:14px;
+box-shadow:0 20px 40px rgba(0,0,0,0.35);
+padding:18px;
+display:none;
+font-family:Arial;
+z-index:9999;
+animation:fadeUp .25s ease;
+}
+
+@keyframes fadeUp{
+from{opacity:0;transform:translateY(15px)}
+to{opacity:1;transform:translateY(0)}
+}
+
+#kh-ai-popup h3{
+margin:0 0 6px 0;
+font-size:16px;
+}
+
+#kh-ai-popup p{
+font-size:13px;
+color:#555;
+margin-bottom:15px;
+line-height:1.4;
+}
+
+.kh-ai-open{
+background:#10a37f;
+border:none;
+color:white;
+padding:11px;
+width:100%;
+border-radius:7px;
+cursor:pointer;
+font-weight:600;
+}
+
+.kh-ai-close{
+position:absolute;
+top:8px;
+right:12px;
+cursor:pointer;
+font-size:16px;
+}
+
+</style>
+
+<!-- Chat Button -->
+
+<div id="kh-ai-button" onclick="toggleKHChat()">
+
+<img src="https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg">
+
+</div>
+
+<!-- Popup -->
+
+<div id="kh-ai-popup">
+
+<div class="kh-ai-close" onclick="toggleKHChat()">✕</div>
+
+<h3>KH AI Assistant</h3>
+
+<p>
+Need quotation for banner, bunting or LED signage?
+Our AI assistant can estimate pricing instantly.
+</p>
+
+<button class="kh-ai-open" onclick="openKHAI()">
+Ask AI for Quotation
+</button>
+
+</div>
+
+<script>
+
+function toggleKHChat(){
+
+let popup=document.getElementById("kh-ai-popup");
+
+popup.style.display =
+popup.style.display==="block" ? "none" : "block";
+
+}
+
+function openKHAI(){
+
+window.open(
+"https://chatgpt.com/g/g-69b66d402d808191b150134427fb1116-kh-ai-assistant-for-quote",
+"_blank"
+);
+
+}
+
+</script>
+
+<!-- End KH AI Assistant -->
+
 </body>
 </html>
