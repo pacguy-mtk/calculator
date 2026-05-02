@@ -718,6 +718,8 @@
             backdrop-filter: blur(5px);
             border: 3px solid rgba(255,255,255,0.3);
         }
+        /* Fixed: .main-banner was missing its closing brace, causing .banner-container
+           and .banner-text to be swallowed inside it and never applied */
         .main-banner {
             height: 120px;
             width: auto;
@@ -725,6 +727,7 @@
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             flex-shrink: 0;
+        }
         .banner-container {
             display: flex;
             align-items: center;
@@ -751,31 +754,64 @@
             text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
-/* Mobile touch improvements */
-@media (max-width: 768px) {
-    .add-btn, .action-btn, .customer-tab {
-        min-height: 48px;
-        padding: 12px 20px;
-    }
-    .delete-btn {
-        width: 40px;
-        height: 40px;
-    }
-    .top-banner {
-        flex-direction: column;
-        text-align: center;
-        padding: 20px;
-    }
-    .main-logo {
-        height: 70px;
-    }
-}
+        /* Mobile — merged with the duplicate block that was in the AI button style tag */
+        @media (max-width: 768px) {
+            .add-btn, .action-btn, .customer-tab { min-height: 48px; padding: 12px 20px; }
+            .delete-btn { width: 40px; height: 40px; }
+            .top-banner { flex-direction: column; text-align: center; padding: 20px; }
+            .main-logo { height: 70px; }
+        }
+
+        /* ─── AI BUTTON & POPUP ─────────────────────
+           Fixed: was a separate <style> block injected after </script>
+           Moved here into the main stylesheet in <head> */
+        #kh-ai-button {
+            position: fixed; bottom: 25px; right: 25px;
+            width: 64px; height: 64px; border-radius: 50%;
+            background: white; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; box-shadow: 0 8px 25px rgba(0,0,0,0.25); z-index: 9999;
+        }
+        #kh-ai-button img { width: 36px; height: 36px; }
+        #kh-ai-button::before {
+            content: ""; position: absolute;
+            width: 64px; height: 64px; border-radius: 50%;
+            background: #10a37f; opacity: .4;
+            animation: khPulse 2s infinite; z-index: -1;
+        }
+        @keyframes khPulse {
+            0%   { transform: scale(1);   opacity: .6; }
+            70%  { transform: scale(1.8); opacity: 0;  }
+            100% { opacity: 0; }
+        }
+        #kh-ai-popup {
+            position: fixed; bottom: 105px; right: 25px;
+            width: 280px; background: white; border-radius: 14px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+            padding: 18px; display: none; font-family: Arial, sans-serif;
+            z-index: 9999; animation: fadeUp .25s ease;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        #kh-ai-popup h3 { margin: 0 0 6px; font-size: 16px; }
+        #kh-ai-popup p  { font-size: 13px; color: #555; margin-bottom: 15px; line-height: 1.4; }
+        .kh-ai-open {
+            background: #10a37f; border: none; color: white;
+            padding: 11px; width: 100%; border-radius: 7px;
+            cursor: pointer; font-weight: 600; font-size: 14px; transition: background 0.2s;
+        }
+        .kh-ai-open:hover { background: #0d8f6e; }
+        .kh-ai-close { position: absolute; top: 8px; right: 12px; cursor: pointer; font-size: 16px; color: #555; }
+
+        /* Fixed: resetPricesBtn had inline style="background:#e74c3c;color:white;" */
+        .reset-prices-btn { background: #e74c3c; color: white; }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <header class="top-banner">
+        <!-- Fixed: was <header> wrapping <header class="top-banner"> — nested headers are invalid HTML -->
+        <header class="top-banner">
                 <div class="banner-background"></div>
                 <div style="display: flex; align-items: center; gap: 30px; position: relative; z-index: 2;">
                     <img src="https://raw.githubusercontent.com/pacguy-mtk/calculator/refs/heads/main/z2026-02-08-13.12.11.jpeg"
@@ -1091,7 +1127,8 @@ e.g., Special discount applied"></textarea>
                 <button class="action-btn save-btn" id="saveBtn">
                     💾 Save Settings
                 </button>
-                <button class="action-btn" id="resetPricesBtn" style="background:#e74c3c;color:white;">🔄 Reset Prices</button>
+                <!-- Fixed: inline style extracted to .reset-prices-btn class in <head> -->
+                <button class="action-btn reset-prices-btn" id="resetPricesBtn">🔄 Reset Prices</button>
                 <button class="action-btn reset-btn" id="resetBtn">
                     🔄 New Quote
                 </button>
@@ -1814,6 +1851,16 @@ e.g., Special discount applied"></textarea>
                 }
             });
             
+            // Fixed: resetPricesBtn listener was split into a separate <script> block at the
+            // bottom of the page alongside the AI chat code. Moved here into init() where
+            // all other button listeners live.
+            document.getElementById('resetPricesBtn')?.addEventListener('click', function() {
+                if (confirm('Reset all prices to default?')) {
+                    localStorage.removeItem('keehup_prices');
+                    location.reload();
+                }
+            });
+
             console.log('✅ KH Sign Media Quotation System Ready!');
             console.log('Features: 3D LED calculator, custom materials, flexible pricing.');
         }
@@ -1826,188 +1873,29 @@ e.g., Special discount applied"></textarea>
     </script>
     <!-- KH AI Assistant Floating Chat -->
 
-<style>
-
-#kh-ai-button{
-position:fixed;
-bottom:25px;
-right:25px;
-width:64px;
-height:64px;
-border-radius:50%;
-background:white;
-display:flex;
-align-items:center;
-justify-content:center;
-cursor:pointer;
-box-shadow:0 8px 25px rgba(0,0,0,0.25);
-z-index:9999;
-}
-
-/* ChatGPT logo */
-#kh-ai-button img{
-width:36px;
-height:36px;
-}
-
-/* Soul / pulse animation */
-#kh-ai-button::before{
-content:"";
-position:absolute;
-width:64px;
-height:64px;
-border-radius:50%;
-background:#10a37f;
-opacity:.4;
-animation:khPulse 2s infinite;
-z-index:-1;
-}
-
-@keyframes khPulse{
-0%{
-transform:scale(1);
-opacity:.6;
-}
-70%{
-transform:scale(1.8);
-opacity:0;
-}
-100%{
-opacity:0;
-}
-}
-
-/* Popup card */
-
-#kh-ai-popup{
-position:fixed;
-bottom:105px;
-right:25px;
-width:280px;
-background:white;
-border-radius:14px;
-box-shadow:0 20px 40px rgba(0,0,0,0.35);
-padding:18px;
-display:none;
-font-family:Arial;
-z-index:9999;
-animation:fadeUp .25s ease;
-}
-
-@keyframes fadeUp{
-from{opacity:0;transform:translateY(15px)}
-to{opacity:1;transform:translateY(0)}
-}
-
-#kh-ai-popup h3{
-margin:0 0 6px 0;
-font-size:16px;
-}
-
-#kh-ai-popup p{
-font-size:13px;
-color:#555;
-margin-bottom:15px;
-line-height:1.4;
-}
-
-.kh-ai-open{
-background:#10a37f;
-border:none;
-color:white;
-padding:11px;
-width:100%;
-border-radius:7px;
-cursor:pointer;
-font-weight:600;
-}
-
-.kh-ai-close{
-position:absolute;
-top:8px;
-right:12px;
-cursor:pointer;
-font-size:16px;
-}
-
-/* Mobile touch improvements */
-@media (max-width: 768px) {
-    .add-btn, .action-btn, .customer-tab {
-        min-height: 48px;
-        padding: 12px 20px;
-    }
-    .delete-btn {
-        width: 40px;
-        height: 40px;
-    }
-    .top-banner {
-        flex-direction: column;
-        text-align: center;
-        padding: 20px;
-    }
-    .main-logo {
-        height: 70px;
-    }
-}
-
-</style>
-
 <!-- Chat Button -->
-
 <div id="kh-ai-button" onclick="toggleKHChat()">
-
-<img src="https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg">
-
+  <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg" alt="KH AI Assistant">
 </div>
 
 <!-- Popup -->
-
 <div id="kh-ai-popup">
-
-<div class="kh-ai-close" onclick="toggleKHChat()">✕</div>
-
-<h3>KH AI Assistant</h3>
-
-<p>
-Need quotation for banner, bunting or LED signage?
-Our AI assistant can estimate pricing instantly.
-</p>
-
-<button class="kh-ai-open" onclick="openKHAI()">
-Ask AI for Quotation
-</button>
-
+  <div class="kh-ai-close" onclick="toggleKHChat()">✕</div>
+  <h3>KH AI Assistant</h3>
+  <p>Need quotation for banner, bunting or LED signage?
+  Our AI assistant can estimate pricing instantly.</p>
+  <button class="kh-ai-open" onclick="openKHAI()">Ask AI for Quotation</button>
 </div>
 
 <script>
-
-function toggleKHChat(){
-
-let popup=document.getElementById("kh-ai-popup");
-
-popup.style.display =
-popup.style.display==="block" ? "none" : "block";
-
+function toggleKHChat() {
+    const popup = document.getElementById('kh-ai-popup');
+    popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
 }
-
-function openKHAI(){
-
-window.open(
-"https://chatgpt.com/g/g-69b66d402d808191b150134427fb1116-kh-ai-assistant-for-quote",
-"_blank"
-);
-
+function openKHAI() {
+    window.open('https://chatgpt.com/g/g-69b66d402d808191b150134427fb1116-kh-ai-assistant-for-quote', '_blank');
 }
-
-    document.getElementById('resetPricesBtn')?.addEventListener('click', function() {
-        if (confirm('Reset all prices to default?')) {
-            localStorage.removeItem('keehup_prices');
-            location.reload();
-        }
-    });
-    
 </script>
-
 <!-- End KH AI Assistant -->
 
 </body>
