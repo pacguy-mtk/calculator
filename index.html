@@ -1,1902 +1,2168 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KH Sign Media - Practical Quotation System</title>
-    <link rel="icon" href="https://raw.githubusercontent.com/pacguy-mtk/calculator/refs/heads/main/zfavicon-32x32.png" type="image/png">
-    <style>
-        :root {
-            --primary: #2c3e50;
-            --success: #27ae60;
-            --warning: #f39c12;
-            --danger: #e74c3c;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 15px;
-            color: #333;
-        }
-        
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            overflow: hidden;
-        }
-        
-        header {
-            background: var(--primary);
-            color: white;
-            padding: 20px 30px;
-            text-align: center;
-        }
-        
-        .logo {
-            max-height: 60px;
-            margin-bottom: 10px;
-        }
-        
-        h1 {
-            font-size: 1.8rem;
-            margin-bottom: 5px;
-        }
-        
-        .subtitle {
-            opacity: 0.8;
-            font-size: 0.95rem;
-        }
-        
-        /* 折叠式价格面板 */
-        .price-panel {
-            background: #f8f9fa;
-            margin: 20px;
-            border-radius: 10px;
-            overflow: hidden;
-            border: 2px solid #e9ecef;
-        }
-        
-        .price-header {
-            background: #34495e;
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            font-weight: 600;
-        }
-        
-        .price-header:hover {
-            background: #2c3e50;
-        }
-        
-        .toggle-icon {
-            transition: transform 0.3s;
-        }
-        
-        .price-header.active .toggle-icon {
-            transform: rotate(180deg);
-        }
-        
-        .price-content {
-            padding: 20px;
-            display: none;
-        }
-        
-        .price-content.active {
-            display: block;
-            animation: slideDown 0.3s ease;
-        }
-        
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        /* 简洁的价格控制 */
-        .simple-price-control {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-        }
-        
-        .price-card {
-            background: white;
-            border-radius: 8px;
-            padding: 15px;
-            border: 2px solid #e3f2fd;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
-        }
-        
-        .material-name {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-            font-weight: 600;
-            color: var(--primary);
-            font-size: 1.1rem;
-        }
-        
-        .material-icon {
-            font-size: 1.3rem;
-        }
-        
-        .price-row {
-            display: grid;
-            grid-template-columns: 1fr 120px;
-            gap: 10px;
-            margin-bottom: 10px;
-            align-items: center;
-        }
-        
-        .price-label {
-            font-size: 0.9rem;
-            color: #555;
-        }
-        
-        .price-input-group {
-            display: flex;
-            align-items: center;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            overflow: hidden;
-            background: white;
-        }
-        
-        .price-input {
-            width: 100%;
-            border: none;
-            padding: 8px 10px;
-            font-size: 0.95rem;
-            text-align: right;
-            font-weight: 600;
-            color: var(--primary);
-        }
-        
-        .currency {
-            padding: 0 10px;
-            background: #f1f8ff;
-            font-size: 0.9rem;
-            color: #3498db;
-            font-weight: 600;
-        }
-        
-        /* 客户类型快捷切换 */
-        .customer-quick-switch {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            background: white;
-            padding: 10px;
-            border-radius: 8px;
-            border: 2px solid #e3f2fd;
-        }
-        
-        .customer-tab {
-            flex: 1;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 6px;
-            background: #f8f9fa;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s;
-            font-size: 0.9rem;
-            text-align: center;
-        }
-        
-        .customer-tab:hover {
-            background: #e9ecef;
-        }
-        
-        .customer-tab.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            font-weight: 600;
-        }
-        
-        /* 主计算器区域 */
-        .calculator-main {
-            padding: 0 20px 20px;
-        }
-        
-        .section-title {
-            color: var(--primary);
-            margin: 20px 0 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #eee;
-            font-size: 1.3rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .input-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .input-group {
-            margin-bottom: 15px;
-        }
-        
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #555;
-            font-size: 0.95rem;
-        }
-        
-        .dimension-inputs {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            gap: 10px;
-            align-items: center;
-        }
-        
-        .dimension-inputs span {
-            text-align: center;
-            font-weight: bold;
-            color: #6c757d;
-        }
-        
-        input, select {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #dee2e6;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: all 0.3s;
-        }
-        
-        input:focus, select:focus {
-            border-color: #667eea;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-        
-        /* 自定义材料区域 */
-        .custom-material-section {
-            background: #f1f8ff;
-            border: 2px dashed #3498db;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            display: none;
-        }
-        
-        .custom-material-section.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .custom-input-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 10px;
-        }
-        
-        .custom-note {
-            background: #fff3cd;
-            border: 2px solid #ffc107;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            color: #856404;
-            margin-top: 10px;
-        }
-        
-        .sqft-display {
-            text-align: center;
-            padding: 10px;
-            background: #e3f2fd;
-            border-radius: 6px;
-            margin-top: 10px;
-            font-weight: 500;
-            color: #1976d2;
-        }
-        
-        .add-btn {
-            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1.1rem;
-            font-weight: 600;
-            width: 100%;
-            margin: 10px 0 25px;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .add-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 7px 20px rgba(46, 204, 113, 0.4);
-        }
-        
-        /* 项目列表 */
-        .items-container {
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            border: 2px solid #e9ecef;
-            margin-bottom: 20px;
-        }
-        
-        .items-header {
-            display: grid;
-            grid-template-columns: 3fr 1fr 1fr 1fr 1fr 50px;
-            gap: 15px;
-            padding: 15px;
-            background: var(--primary);
-            color: white;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-        
-        .item-row {
-            display: grid;
-            grid-template-columns: 3fr 1fr 1fr 1fr 1fr 50px;
-            gap: 15px;
-            padding: 12px 15px;
-            align-items: center;
-            border-bottom: 1px solid #eee;
-            transition: background 0.2s;
-        }
-        
-        .item-row:nth-child(even) {
-            background: #f8f9fa;
-        }
-        
-        .item-row:hover {
-            background: #e3f2fd;
-        }
-        
-        .delete-btn {
-            background: var(--danger);
-            color: white;
-            border: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            transition: all 0.3s;
-        }
-        
-        .delete-btn:hover {
-            background: #c0392b;
-            transform: scale(1.1);
-        }
-        
-        /* 总计区域 */
-        .total-section {
-            background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 12px;
-            margin: 20px;
-        }
-        
-        .total-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .grand-total {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #2ecc71;
-            border-top: 2px solid rgba(255, 255, 255, 0.2);
-            padding-top: 20px;
-            margin-top: 20px;
-        }
-        
-        /* 备注区域 */
-        .notes-section {
-            background: white;
-            padding: 15px 20px;
-            margin: 20px;
-            border-radius: 10px;
-            border: 2px solid #e3f2fd;
-        }
-        
-        textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #dee2e6;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            font-family: inherit;
-            resize: vertical;
-            min-height: 80px;
-        }
-        
-        /* 按钮组 */
-        .action-buttons {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin: 20px;
-        }
-        
-        .action-btn {
-            padding: 15px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .print-btn {
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-            color: white;
-        }
-        
-        .print-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 7px 20px rgba(52, 152, 219, 0.4);
-        }
-        
-        .reset-btn {
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-            color: white;
-        }
-        
-        .reset-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 7px 20px rgba(231, 76, 60, 0.4);
-        }
-        
-        .save-btn {
-            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
-            color: white;
-        }
-        
-        .save-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 7px 20px rgba(243, 156, 18, 0.4);
-        }
-        
-        /* 响应式设计 */
-        @media (max-width: 768px) {
-            .items-header, .item-row {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
-            
-            .items-header {
-                display: none;
-            }
-            
-            .input-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .simple-price-control {
-                grid-template-columns: 1fr;
-            }
-            
-            .action-buttons {
-                grid-template-columns: 1fr;
-            }
-            
-            .customer-quick-switch {
-                flex-direction: column;
-            }
-            
-            .custom-input-row {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        /* 最小价格提示 */
-        .min-price-hint {
-            background: #fff3cd;
-            border: 2px solid #ffc107;
-            padding: 8px 12px;
-            border-radius: 6px;
-            margin-top: 10px;
-            font-size: 0.85rem;
-            color: #856404;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        /* ========== 新添加的样式 ========== */
-        
-        /* 近似值计算开关 */
-        .rounding-toggle {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 10px;
-            padding: 10px;
-            background: #e8f5e9;
-            border-radius: 6px;
-            border: 1px solid #4caf50;
-        }
-        
-        .rounding-toggle label {
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: #2e7d32;
-        }
-        
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 24px;
-        }
-        
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 24px;
-        }
-        
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 16px;
-            width: 16px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-        
-        input:checked + .slider {
-            background-color: #4caf50;
-        }
-        
-        input:checked + .slider:before {
-            transform: translateX(26px);
-        }
-        
-        /* 3D LED专用计算器 */
-        .led-calculator {
-            background: #f3e5f5;
-            border: 2px solid #9c27b0;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            display: none;
-        }
-        
-        .led-calculator.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        .led-input-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 15px;
-            margin-bottom: 10px;
-        }
-        
-        .led-result {
-            background: #fff;
-            padding: 12px;
-            border-radius: 6px;
-            border: 1px solid #e1bee7;
-            margin-top: 10px;
-            font-weight: 500;
-        }
-        
-        .led-result span {
-            color: #9c27b0;
-            font-weight: bold;
-        }
-        
-        .calculator-info {
-            background: #fff8e1;
-            border: 1px solid #ffd54f;
-            border-radius: 6px;
-            padding: 10px;
-            margin-top: 10px;
-            font-size: 0.85rem;
-            color: #5d4037;
-        }
-        
-        .calculator-info ul {
-            margin: 5px 0 5px 20px;
-            padding: 0;
-        }
-        
-        .calculator-info li {
-            margin-bottom: 3px;
-        }
-        
-        /* 近似值指示器 */
-        .rounded-badge {
-            background: #4caf50;
-            color: white;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            margin-left: 8px;
-        }
-        
-        .original-price {
-            text-decoration: line-through;
-            color: #999;
-            margin-right: 5px;
-            font-size: 0.9rem;
-        }
-        .top-banner {
-            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-            padding: 20px 30px;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 30px;
-            color: white;
-            border-bottom: 5px solid #e74c3c;
-            min-height: 200px;
-            overflow: hidden;
-        }
-        .banner-background {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: url('https://raw.githubusercontent.com/pacguy-mtk/calculator/refs/heads/main/z726c97a9-adf4-4272-a92a-bedf76daaeee.jpg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            opacity: 0.7;
-            z-index: 1
-        }
-        .main-logo {
-            height: 120px;
-            width: auto;
-            border-radius: 10px;
-            padding: 8px;
-            background: rgba(255,255,255,0.2);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-            z-index: 2;
-            position: relative;
-            backdrop-filter: blur(5px);
-            border: 3px solid rgba(255,255,255,0.3);
-        }
-        /* Fixed: .main-banner was missing its closing brace, causing .banner-container
-           and .banner-text to be swallowed inside it and never applied */
-        .main-banner {
-            height: 120px;
-            width: auto;
-            max-width: 500px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            flex-shrink: 0;
-        }
-        .banner-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 30px;
-            width: 100%;
-        }
-        .banner-text {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            margin-left: 30px;
-        }
-        .banner-text h1 {
-            font-size: 2rem;
-            margin-bottom: 8px;
-            font-weight: 800;
-            text-shadow: 0 3px 6px rgba(0,0,0,0.5);
-        }
-        .banner-text .subtitle {
-            opacity: 0.9;
-            font-size: 1.1rem;
-            font-weight: 500;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>KH Sign Media Quote Builder</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --ink: #edf7f5;
+      --muted: #91a8a4;
+      --line: #263633;
+      --paper: #121b19;
+      --soft: #17221f;
+      --brand: #2ee6c5;
+      --brand-2: #7df6df;
+      --blue: #69a7ff;
+      --amber: #f0b357;
+      --danger: #ff6f61;
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.34);
+    }
 
-        /* Mobile — merged with the duplicate block that was in the AI button style tag */
-        @media (max-width: 768px) {
-            .add-btn, .action-btn, .customer-tab { min-height: 48px; padding: 12px 20px; }
-            .delete-btn { width: 40px; height: 40px; }
-            .top-banner { flex-direction: column; text-align: center; padding: 20px; }
-            .main-logo { height: 70px; }
-        }
+    * {
+      box-sizing: border-box;
+    }
 
-        /* ─── AI BUTTON & POPUP ─────────────────────
-           Fixed: was a separate <style> block injected after </script>
-           Moved here into the main stylesheet in <head> */
-        #kh-ai-button {
-            position: fixed; bottom: 25px; right: 25px;
-            width: 64px; height: 64px; border-radius: 50%;
-            background: white; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; box-shadow: 0 8px 25px rgba(0,0,0,0.25); z-index: 9999;
-        }
-        #kh-ai-button img { width: 36px; height: 36px; }
-        #kh-ai-button::before {
-            content: ""; position: absolute;
-            width: 64px; height: 64px; border-radius: 50%;
-            background: #10a37f; opacity: .4;
-            animation: khPulse 2s infinite; z-index: -1;
-        }
-        @keyframes khPulse {
-            0%   { transform: scale(1);   opacity: .6; }
-            70%  { transform: scale(1.8); opacity: 0;  }
-            100% { opacity: 0; }
-        }
-        #kh-ai-popup {
-            position: fixed; bottom: 105px; right: 25px;
-            width: 280px; background: white; border-radius: 14px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.35);
-            padding: 18px; display: none; font-family: Arial, sans-serif;
-            z-index: 9999; animation: fadeUp .25s ease;
-        }
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(15px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-        #kh-ai-popup h3 { margin: 0 0 6px; font-size: 16px; }
-        #kh-ai-popup p  { font-size: 13px; color: #555; margin-bottom: 15px; line-height: 1.4; }
-        .kh-ai-open {
-            background: #10a37f; border: none; color: white;
-            padding: 11px; width: 100%; border-radius: 7px;
-            cursor: pointer; font-weight: 600; font-size: 14px; transition: background 0.2s;
-        }
-        .kh-ai-open:hover { background: #0d8f6e; }
-        .kh-ai-close { position: absolute; top: 8px; right: 12px; cursor: pointer; font-size: 16px; color: #555; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 18% 0%, rgba(46, 230, 197, 0.12), transparent 34rem),
+        radial-gradient(circle at 88% 10%, rgba(105, 167, 255, 0.12), transparent 30rem),
+        linear-gradient(180deg, #0a0f0e 0%, #101715 48%, #0a0d0c 100%);
+      color: var(--ink);
+    }
 
-        /* Fixed: resetPricesBtn had inline style="background:#e74c3c;color:white;" */
-        .reset-prices-btn { background: #e74c3c; color: white; }
-    </style>
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      gap: 16px;
+      padding: 14px clamp(16px, 3vw, 34px);
+      background: rgba(12, 18, 17, 0.88);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(16px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 42px;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      background: var(--brand);
+      color: #06100e;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .brand-logo {
+      width: 58px;
+      height: 58px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid rgba(46, 230, 197, 0.22);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .brand p {
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .tabs {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #101816;
+    }
+
+    .tab {
+      border: 0;
+      border-radius: 6px;
+      padding: 9px 12px;
+      color: var(--muted);
+      background: transparent;
+      font-size: 14px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .tab.active {
+      color: #06100e;
+      background: var(--brand);
+      box-shadow: 0 8px 22px rgba(46, 230, 197, 0.22);
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn {
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 0 13px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #17211f;
+      color: var(--ink);
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .btn.primary {
+      border-color: var(--brand);
+      background: var(--brand);
+      color: #06100e;
+    }
+
+    .btn.warning {
+      border-color: #e6c27f;
+      background: #2a2114;
+      color: #ffd18a;
+    }
+
+    .icon {
+      width: 16px;
+      aspect-ratio: 1;
+      display: inline-block;
+      position: relative;
+      flex: 0 0 auto;
+    }
+
+    .icon.print::before {
+      content: "";
+      position: absolute;
+      inset: 4px 2px 1px;
+      border: 2px solid currentColor;
+      border-radius: 2px;
+    }
+
+    .icon.print::after {
+      content: "";
+      position: absolute;
+      left: 4px;
+      right: 4px;
+      top: 0;
+      height: 7px;
+      border: 2px solid currentColor;
+      background: currentColor;
+      opacity: 0.3;
+    }
+
+    .icon.add::before,
+    .icon.add::after {
+      content: "";
+      position: absolute;
+      background: currentColor;
+      border-radius: 99px;
+    }
+
+    .icon.add::before {
+      left: 2px;
+      right: 2px;
+      top: 7px;
+      height: 2px;
+    }
+
+    .icon.add::after {
+      top: 2px;
+      bottom: 2px;
+      left: 7px;
+      width: 2px;
+    }
+
+    .icon.settings::before {
+      content: "";
+      position: absolute;
+      inset: 2px;
+      border: 2px solid currentColor;
+      border-radius: 50%;
+      box-shadow: 0 0 0 3px transparent;
+    }
+
+    .icon.settings::after {
+      content: "";
+      position: absolute;
+      left: 7px;
+      top: 0;
+      width: 2px;
+      height: 16px;
+      background: currentColor;
+      transform: rotate(45deg);
+      border-radius: 99px;
+    }
+
+    .icon.camera::before {
+      content: "";
+      position: absolute;
+      left: 1px;
+      right: 1px;
+      top: 4px;
+      bottom: 2px;
+      border: 2px solid currentColor;
+      border-radius: 3px;
+    }
+
+    .icon.camera::after {
+      content: "";
+      position: absolute;
+      left: 5px;
+      top: 7px;
+      width: 6px;
+      aspect-ratio: 1;
+      border: 2px solid currentColor;
+      border-radius: 50%;
+      box-shadow: 4px -6px 0 -3px currentColor;
+    }
+
+    main {
+      padding: clamp(16px, 3vw, 34px);
+    }
+
+    .view {
+      display: none;
+      max-width: 1320px;
+      margin: 0 auto;
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    .panel {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: 15px;
+      letter-spacing: 0;
+    }
+
+    .panel-subtitle {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .panel-body {
+      padding: 18px;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+      min-width: 0;
+    }
+
+    .field label {
+      color: #aac0bc;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid #354844;
+      border-radius: 7px;
+      padding: 10px 11px;
+      background: #0d1412;
+      color: var(--ink);
+      outline: none;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--brand-2);
+      box-shadow: 0 0 0 3px rgba(46, 230, 197, 0.16);
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #0d1412;
+    }
+
+    .segment {
+      min-height: 38px;
+      border: 0;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .segment.active {
+      background: var(--brand);
+      color: #06100e;
+      box-shadow: 0 5px 18px rgba(46, 230, 197, 0.2);
+    }
+
+    .price-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 28px;
+      padding: 0 9px;
+      border-radius: 999px;
+      background: rgba(46, 230, 197, 0.12);
+      color: var(--brand);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .tier-badge {
+      border: 1px solid rgba(46, 230, 197, 0.28);
+    }
+
+    .tier-badge.vip {
+      min-height: 34px;
+      padding: 0 12px;
+      border-color: rgba(240, 179, 87, 0.55);
+      background:
+        linear-gradient(135deg, rgba(240, 179, 87, 0.24), rgba(46, 230, 197, 0.1));
+      color: #ffd98f;
+      box-shadow: 0 10px 28px rgba(240, 179, 87, 0.12);
+    }
+
+    .tier-crown {
+      width: 18px;
+      height: 14px;
+      display: inline-block;
+      background: currentColor;
+      clip-path: polygon(0 100%, 0 36%, 23% 66%, 50% 0, 77% 66%, 100% 36%, 100% 100%);
+      filter: drop-shadow(0 0 8px rgba(240, 179, 87, 0.45));
+    }
+
+    .tier-note {
+      min-height: 34px;
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #0d1412;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .quote-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .quote-table th {
+      padding: 11px 12px;
+      background: #18231f;
+      color: #9eb4af;
+      font-size: 12px;
+      text-align: left;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .quote-table td {
+      padding: 13px 12px;
+      border-top: 1px solid var(--line);
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    .quote-table td:last-child,
+    .quote-table th:last-child {
+      text-align: right;
+    }
+
+    .material-meta {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .total-card {
+      background: linear-gradient(180deg, #0f2f2a 0%, #0a1715 100%);
+      color: var(--ink);
+      border-radius: 8px;
+      padding: 17px;
+    }
+
+    .total-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(237, 247, 245, 0.14);
+      color: rgba(237, 247, 245, 0.78);
+      font-size: 14px;
+    }
+
+    .grand {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding-top: 17px;
+      font-size: clamp(22px, 3vw, 34px);
+      font-weight: 850;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: minmax(280px, 360px) 1fr minmax(270px, 320px);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .dash-form {
+      display: grid;
+      gap: 14px;
+    }
+
+    .two {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .settings-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .settings-row {
+      display: grid;
+      grid-template-columns: 1fr 84px;
+      gap: 10px;
+      align-items: center;
+      padding: 11px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #0d1412;
+    }
+
+    .settings-row strong {
+      display: block;
+      font-size: 13px;
+    }
+
+    .settings-row span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .summary-stack {
+      display: grid;
+      gap: 14px;
+    }
+
+    .metric {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #0d1412;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .metric strong {
+      font-size: 22px;
+    }
+
+    .drawer-note {
+      padding: 13px;
+      border-radius: 8px;
+      background: rgba(240, 179, 87, 0.13);
+      color: #ffd18a;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .wizard-layout {
+      display: grid;
+      grid-template-columns: minmax(230px, 280px) 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .steps {
+      display: grid;
+      gap: 10px;
+    }
+
+    .step {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 13px;
+      background: var(--paper);
+    }
+
+    .step.active {
+      border-color: rgba(46, 230, 197, 0.45);
+      box-shadow: 0 12px 30px rgba(46, 230, 197, 0.1);
+    }
+
+    .step small {
+      color: var(--muted);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .step strong {
+      display: block;
+      margin-top: 4px;
+    }
+
+    .wizard-board {
+      display: grid;
+      grid-template-columns: minmax(320px, 1fr) minmax(280px, 360px);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .large-form {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 15px;
+    }
+
+    .large-form .full {
+      grid-column: 1 / -1;
+    }
+
+    .workflow-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .preview-layout {
+      display: grid;
+      grid-template-columns: minmax(330px, 420px) 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .quick-panel {
+      position: sticky;
+      top: 88px;
+    }
+
+    .quote-paper {
+      --ink: #1d2624;
+      --muted: #64736f;
+      --line: #d8dfdc;
+      --brand: #148f7c;
+      min-height: 840px;
+      background: white;
+      border: 1px solid #d8dfdc;
+      border-radius: 8px;
+      box-shadow: 0 22px 55px rgba(25, 37, 34, 0.16);
+      padding: clamp(24px, 4vw, 44px);
+      color: var(--ink);
+    }
+
+    .paper-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      padding-bottom: 22px;
+      border-bottom: 3px solid var(--brand);
+    }
+
+    .paper-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .paper-logo .brand-mark {
+      width: 52px;
+    }
+
+    .paper-brand-logo {
+      width: 58px;
+      height: 58px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid #d8dfdc;
+    }
+
+    .paper-logo h2 {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: 0;
+    }
+
+    .paper-logo p,
+    .paper-meta p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .paper-meta {
+      text-align: right;
+    }
+
+    .paper-meta h3 {
+      margin: 0;
+      font-size: 26px;
+      letter-spacing: 0;
+    }
+
+    .bill-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+      margin: 26px 0;
+    }
+
+    .bill-box {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfb;
+    }
+
+    .bill-box strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--brand);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .paper-total {
+      margin-left: auto;
+      margin-top: 28px;
+      width: min(340px, 100%);
+      border-top: 2px solid var(--ink);
+      padding-top: 16px;
+    }
+
+    .print-items {
+      display: grid;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .print-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px 18px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+      break-inside: avoid;
+    }
+
+    .print-item-main strong {
+      display: block;
+      color: var(--ink);
+      font-size: 15px;
+      line-height: 1.35;
+    }
+
+    .print-item-main span,
+    .print-item-meta {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .print-item-total {
+      min-width: 110px;
+      text-align: right;
+      color: var(--ink);
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .print-item-meta {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      padding: 10px;
+      border-radius: 7px;
+      background: #f6f8f7;
+    }
+
+    .print-item-meta b {
+      display: block;
+      margin-bottom: 2px;
+      color: #52635f;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .terms {
+      margin-top: 42px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+    }
+
+    .status-row span {
+      color: var(--muted);
+    }
+
+    .ai-box {
+      margin-top: 14px;
+      border: 1px solid rgba(46, 230, 197, 0.25);
+      border-radius: 8px;
+      padding: 13px;
+      background: rgba(46, 230, 197, 0.08);
+    }
+
+    .ai-box strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--brand);
+    }
+
+    .ai-box p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .delete-row {
+      border: 0;
+      border-radius: 6px;
+      width: 30px;
+      height: 30px;
+      background: rgba(255, 111, 97, 0.13);
+      color: var(--danger);
+      font-weight: 900;
+    }
+
+    .quick-remove {
+      display: grid;
+      gap: 8px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #0d1412;
+    }
+
+    .design-fee-box {
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid rgba(240, 179, 87, 0.28);
+      border-radius: 8px;
+      background: rgba(240, 179, 87, 0.08);
+    }
+
+    .quick-remove-head,
+    .quick-remove-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .quick-remove-head {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .quick-remove-head strong {
+      color: var(--ink);
+    }
+
+    .quick-remove-item {
+      min-height: 44px;
+      padding: 9px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #121b19;
+    }
+
+    .quick-remove-item strong {
+      display: block;
+      font-size: 13px;
+    }
+
+    .quick-remove-item span {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .price-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(0, 0, 0, 0.62);
+      backdrop-filter: blur(10px);
+    }
+
+    .price-modal.open {
+      display: flex;
+    }
+
+    .price-dialog {
+      width: min(620px, 100%);
+      max-height: min(760px, calc(100vh - 36px));
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      box-shadow: 0 28px 80px rgba(0, 0, 0, 0.5);
+    }
+
+    @media (max-width: 1120px) {
+      .topbar {
+        grid-template-columns: 1fr;
+      }
+
+      .tabs,
+      .actions {
+        justify-self: start;
+      }
+
+      .dashboard-grid,
+      .wizard-board,
+      .preview-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .quick-panel {
+        position: static;
+      }
+    }
+
+    @media (max-width: 760px) {
+      main {
+        padding: 12px;
+      }
+
+      .tabs {
+        width: 100%;
+        overflow-x: auto;
+      }
+
+      .tab {
+        flex: 1 0 max-content;
+      }
+
+      .actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .actions .btn.primary {
+        grid-column: 1 / -1;
+      }
+
+      .two,
+      .wizard-layout,
+      .large-form,
+      .bill-row {
+        grid-template-columns: 1fr;
+      }
+
+      .quote-table,
+      .quote-table thead,
+      .quote-table tbody,
+      .quote-table tr,
+      .quote-table th,
+      .quote-table td {
+        display: block;
+      }
+
+      .quote-table thead {
+        display: none;
+      }
+
+      .quote-table tr {
+        border-top: 1px solid var(--line);
+        padding: 10px 0;
+      }
+
+      .quote-table td {
+        border: 0;
+        padding: 4px 0;
+      }
+
+      .quote-table td:last-child {
+        text-align: left;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      .topbar,
+      .view,
+      .price-modal,
+      .quick-panel {
+        display: none !important;
+      }
+
+      main {
+        padding: 0;
+      }
+
+      #view-preview {
+        display: block !important;
+        max-width: none;
+        margin: 0;
+      }
+
+      #view-preview .preview-layout {
+        display: block;
+      }
+
+      .quote-paper {
+        display: block;
+        min-height: auto;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+        padding: 18mm;
+      }
+
+      .quote-table th {
+        color: #52635f;
+        background: #f3f7f5;
+      }
+
+      .paper-table {
+        display: table !important;
+        width: 100% !important;
+      }
+
+      .paper-table th,
+      .paper-table td {
+        display: table-cell !important;
+      }
+
+      .paper-table thead {
+        display: table-header-group !important;
+      }
+
+      .paper-table tbody {
+        display: table-row-group !important;
+      }
+
+      .paper-table tr {
+        display: table-row !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+
+      .paper-table td:last-child,
+      .paper-table th:last-child {
+        text-align: right !important;
+      }
+
+      .print-items {
+        gap: 0;
+      }
+
+      .print-item {
+        padding: 11px 0;
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+
+      .print-item-meta {
+        background: #f6f8f7;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Fixed: was <header> wrapping <header class="top-banner"> — nested headers are invalid HTML -->
-        <header class="top-banner">
-                <div class="banner-background"></div>
-                <div style="display: flex; align-items: center; gap: 30px; position: relative; z-index: 2;">
-                    <img src="https://raw.githubusercontent.com/pacguy-mtk/calculator/refs/heads/main/z2026-02-08-13.12.11.jpeg"
-                        alt="KH Sign Media Logo" class="main-logo">
-                <div class="banner-text">
-                    <h1>KH Sign Media</h1>
-                    <p class="subtitle">Practical & Flexible Pricing Calculator</p>
-                </div>
-        </header>
-        
-        <!-- 折叠式价格面板 -->
-        <div class="price-panel">
-            <div class="price-header active" id="priceToggle">
-                <div>💰 Price Settings (Click to Show/Hide)</div>
-                <div class="toggle-icon">▼</div>
-            </div>
-            
-            <div class="price-content active" id="priceContent">
-                <!-- 客户类型快捷切换 -->
-                <div class="customer-quick-switch" id="customerTabs">
-                    <button class="customer-tab active" data-type="standard">Standard Price</button>
-                    <button class="customer-tab" data-type="regular">Regular Customer</button>
-                    <button class="customer-tab" data-type="vip">VIP Customer</button>
-                </div>
-                
-                <!-- 价格控制 -->
-                <div class="simple-price-control">
-                    <div class="price-card">
-                        <div class="material-name">
-                            <span class="material-icon">🖨️</span>
-                            Tarpaulin Solvent
-                        </div>
-                        <div class="price-row">
-                            <div class="price-label">Price per sqft:</div>
-                            <div class="price-input-group">
-                                <input type="number" id="priceSolvent" class="price-input" 
-                                       step="0.10" value="2.00" min="0">
-                                <span class="currency">RM</span>
-                            </div>
-                        </div>
-                        <div class="min-price-hint">
-                            ⚠️ Minimum RM 30 per item
-                        </div>
-                    </div>
-                    
-                    <div class="price-card">
-                        <div class="material-name">
-                            <span class="material-icon">✨</span>
-                            Tarpaulin UV
-                        </div>
-                        <div class="price-row">
-                            <div class="price-label">Price per sqft:</div>
-                            <div class="price-input-group">
-                                <input type="number" id="priceUV" class="price-input" 
-                                       step="0.10" value="4.00" min="0">
-                                <span class="currency">RM</span>
-                            </div>
-                        </div>
-                        <div class="min-price-hint">
-                            ⚠️ Minimum RM 30 per item
-                        </div>
-                    </div>
-                    
-                    <div class="price-card">
-                        <div class="material-name">
-                            <span class="material-icon">💡</span>
-                            3D LED Letter
-                        </div>
-                        <div class="price-row">
-                            <div class="price-label">Price per cm:</div>
-                            <div class="price-input-group">
-                                <input type="number" id="priceLed3d" class="price-input" 
-                                       step="0.10" value="6.00" min="0">
-                                <span class="currency">RM</span>
-                            </div>
-                        </div>
-                        <!-- 近似值计算开关 -->
-                        <div class="rounding-toggle">
-                            <label>Use Approximate Pricing:</label>
-                            <div class="switch">
-                                <input type="checkbox" id="roundingLed3d" checked>
-                                <span class="slider"></span>
-                            </div>
-                        </div>
-                        <div class="min-price-hint">
-                            ⚠️ Round to nearest RM (e.g., 67.50 → 68.00)
-                        </div>
-                    </div>
-                    
-                    <div class="price-card">
-                        <div class="material-name">
-                            <span class="material-icon">🌈</span>
-                            3D LED Letter with UV Sticker
-                        </div>
-                        <div class="price-row">
-                            <div class="price-label">Price per cm:</div>
-                            <div class="price-input-group">
-                                <input type="number" id="priceLed3dUv" class="price-input" 
-                                       step="0.10" value="7.00" min="0">
-                                <span class="currency">RM</span>
-                            </div>
-                        </div>
-                        <div class="rounding-toggle">
-                            <label>Use Approximate Pricing:</label>
-                            <div class="switch">
-                                <input type="checkbox" id="roundingLed3dUv" checked>
-                                <span class="slider"></span>
-                            </div>
-                        </div>
-                        <div class="min-price-hint">
-                            ⚠️ Round to nearest RM (e.g., 87.50 → 88.00)
-                        </div>
-                    </div>
-                    
-                    <div class="price-card">
-                        <div class="material-name">
-                            <span class="material-icon">💰</span>
-                            3D LED Letter Special Price
-                        </div>
-                        <div class="price-row">
-                            <div class="price-label">Price per cm:</div>
-                            <div class="price-input-group">
-                                <input type="number" id="priceLed3dSpecial" class="price-input" 
-                                       step="0.10" value="4.50" min="0">
-                                <span class="currency">RM</span>
-                            </div>
-                        </div>
-                        <div class="rounding-toggle">
-                            <label>Use Approximate Pricing:</label>
-                            <div class="switch">
-                                <input type="checkbox" id="roundingLed3dSpecial" checked>
-                                <span class="slider"></span>
-                            </div>
-                        </div>
-                        <div class="min-price-hint">
-                            ⚠️ Special discounted rate
-                        </div>
-                    </div>
-                    
-                    <div class="price-card">
-                        <div class="material-name">
-                            <span class="material-icon">🎨</span>
-                            Design Fees
-                        </div>
-                        <div class="price-row">
-                            <div class="price-label">Minimum charge:</div>
-                            <div class="price-input-group">
-                                <input type="number" id="priceDesign" class="price-input" 
-                                       step="5" value="80.00" min="0">
-                                <span class="currency">RM</span>
-                            </div>
-                        </div>
-                        <div class="min-price-hint">
-                            ✅ Can be RM 0 (customer's design)
-                        </div>
-                    </div>
-                </div>
-                
-                <div style="margin-top: 15px; font-size: 0.9rem; color: #666; padding: 10px; background: #f1f8ff; border-radius: 6px;">
-                    💡 <strong>Tip:</strong> Switch between customer types above to quickly apply different pricing strategies.
-                </div>
-            </div>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <img class="brand-logo" src="https://raw.githubusercontent.com/pacguy-mtk/calculator/refs/heads/main/z2026-02-08-13.12.11.jpeg" alt="KH Sign Media logo">
+        <div>
+          <h1>KH Sign Media Quote Builder</h1>
+          <p>Quotation workspace for signage and printing</p>
         </div>
-        
-        <!-- 主计算器 -->
-        <div class="calculator-main">
-            <div class="section-title">
-                <span>➕</span> Add Items to Quotation
+      </div>
+
+      <nav class="tabs" aria-label="Quote views">
+        <button class="tab active" data-view="dashboard">Product Entry</button>
+        <button class="tab" data-view="wizard">Guided Template</button>
+        <button class="tab" data-view="preview">Quotation</button>
+      </nav>
+
+      <div class="actions">
+        <button class="btn warning" type="button" data-open-prices><span class="icon settings"></span>Prices</button>
+        <button class="btn" type="button" data-screenshot><span class="icon camera"></span>Save Preview Image</button>
+        <button class="btn primary" type="button" data-add-sample><span class="icon add"></span>Add sample</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="view active" id="view-dashboard">
+        <div class="dashboard-grid">
+          <aside class="panel">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Add Item</h2>
+                <p class="panel-subtitle">Fast daily quote entry</p>
+              </div>
+              <span class="price-pill tier-badge" id="dash-tier">Standard</span>
             </div>
-            
-            <div class="input-grid">
-                <div class="input-group">
-                    <label for="itemName">Description</label>
-                    <input type="text" id="itemName" 
-                           placeholder="e.g., Front Banner, Event Signage">
+            <div class="panel-body dash-form">
+              <div class="segmented" data-tier-control>
+                <button class="segment active" data-tier="standard">Standard</button>
+                <button class="segment" data-tier="regular">Regular</button>
+                <button class="segment" data-tier="vip">VIP</button>
+              </div>
+              <div class="tier-note" data-tier-note>Standard walk-in pricing.</div>
+              <div class="field">
+                <label for="dash-desc">Description</label>
+                <input id="dash-desc" data-desc value="Front shop banner">
+              </div>
+              <div class="two">
+                <div class="field">
+                  <label for="dash-width">Width</label>
+                  <input id="dash-width" data-width type="number" min="0.1" step="0.1" value="8">
                 </div>
-                
-                <div class="input-group">
-                    <label for="size">Size (Width × Height)</label>
-                    <div class="dimension-inputs">
-                        <input type="number" id="width" 
-                               placeholder="Width" min="0.1" value="1" step="0.1">
-                        <span>×</span>
-                        <input type="number" id="height" 
-                               placeholder="Height" min="0.1" value="1" step="0.1">
-                    </div>
-                    <div class="sqft-display" id="sqftDisplay">
-                        Total Area: <span id="totalSqft">1.00</span> sqft
-                    </div>
+                <div class="field">
+                  <label for="dash-height">Height</label>
+                  <input id="dash-height" data-height type="number" min="0.1" step="0.1" value="3">
                 </div>
-                
-                <div class="input-group">
-                    <label for="materialType">Material Type</label>
-                    <select id="materialType">
-                        <option value="tarpaulin-solvent">Tarpaulin Solvent</option>
-                        <option value="tarpaulin-uv">Tarpaulin UV</option>
-                        <option value="led-3d">3D LED Letter</option>
-                        <option value="led-3d-uv">3D LED Letter with UV Sticker</option>
-                        <option value="led-3d-special">3D LED Letter Special Price</option>
-                        <option value="design-fees">Design Fees</option>
-                        <option value="custom">➕ Custom Material</option>
+              </div>
+              <div class="field">
+                <label for="dash-material">Material</label>
+                <select id="dash-material" data-material>
+                  <option value="tarpaulin-solvent">Tarpaulin Solvent</option>
+                  <option value="tarpaulin-uv">Tarpaulin UV</option>
+                  <option value="led-3d">3D LED Letter</option>
+                  <option value="led-3d-uv">3D LED with UV Sticker</option>
+                </select>
+              </div>
+              <button class="btn primary" type="button" data-add-current><span class="icon add"></span>Add to quote</button>
+              <div class="design-fee-box">
+                <div class="field">
+                  <label for="dash-design-fee">Design Fee</label>
+                  <input id="dash-design-fee" data-design-fee type="number" min="0" step="5" value="80">
+                </div>
+                <button class="btn" type="button" data-add-design-fee>Add / update design fee</button>
+              </div>
+            </div>
+          </aside>
+
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Quotation Items</h2>
+                <p class="panel-subtitle">Cleaner table, edit/delete-ready rows</p>
+              </div>
+              <span class="price-pill" data-item-count>0 items</span>
+            </div>
+            <div class="panel-body">
+              <table class="quote-table">
+                <thead>
+                  <tr>
+                    <th>Description</th>
+                    <th>Size</th>
+                    <th>Qty</th>
+                    <th>Unit</th>
+                    <th>Total</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody data-quote-rows></tbody>
+              </table>
+            </div>
+          </section>
+
+          <aside class="summary-stack">
+            <div class="total-card">
+              <div class="total-line">
+                <span>Subtotal</span>
+                <strong data-subtotal>RM 0.00</strong>
+              </div>
+              <div class="total-line">
+                <span>Tax</span>
+                <strong>RM 0.00</strong>
+              </div>
+              <div class="grand">
+                <span>Total</span>
+                <span data-grand-total>RM 0.00</span>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <div>
+                  <h2 class="panel-title">Price Settings</h2>
+                  <p class="panel-subtitle">Material rates by customer tier</p>
+                </div>
+              </div>
+              <div class="panel-body settings-list">
+                <div class="settings-row">
+                  <div><strong>Tarpaulin Solvent</strong><span>Per sqft</span></div>
+                  <input data-price-field="tarpaulin-solvent" type="number" min="0" step="0.05" value="2.00" aria-label="Tarpaulin Solvent price">
+                </div>
+                <div class="settings-row">
+                  <div><strong>Tarpaulin UV</strong><span>Per sqft</span></div>
+                  <input data-price-field="tarpaulin-uv" type="number" min="0" step="0.05" value="4.00" aria-label="Tarpaulin UV price">
+                </div>
+                <div class="settings-row">
+                  <div><strong>3D LED</strong><span>Per cm</span></div>
+                  <input data-price-field="led-3d" type="number" min="0" step="0.05" value="6.00" aria-label="3D LED price">
+                </div>
+                <div class="settings-row">
+                  <div><strong>3D LED with UV Sticker</strong><span>Per cm</span></div>
+                  <input data-price-field="led-3d-uv" type="number" min="0" step="0.05" value="7.00" aria-label="3D LED with UV Sticker price">
+                </div>
+                <div class="settings-row">
+                  <div><strong>Design Fees</strong><span>Minimum charge</span></div>
+                  <input data-price-field="design-fees" type="number" min="0" step="5" value="80.00" aria-label="Design fees price">
+                </div>
+                <button class="btn" type="button" data-reset-prices>Reset default prices</button>
+                <div class="drawer-note">Use price settings when material rates or customer tier pricing need updates.</div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="view" id="view-wizard">
+        <div class="wizard-layout">
+          <aside class="steps">
+            <div class="step active">
+              <small>Step 1</small>
+              <strong>Customer type</strong>
+            </div>
+            <div class="step active">
+              <small>Step 2</small>
+              <strong>Product details</strong>
+            </div>
+            <div class="step">
+              <small>Step 3</small>
+              <strong>Review quote</strong>
+            </div>
+            <div class="step">
+              <small>Step 4</small>
+              <strong>Print or share</strong>
+            </div>
+          </aside>
+
+          <div class="wizard-board">
+            <section class="panel">
+              <div class="panel-header">
+                <div>
+                  <h2 class="panel-title">Product Entry</h2>
+                  <p class="panel-subtitle">Step-by-step item setup</p>
+                </div>
+              </div>
+              <div class="panel-body">
+                <div class="large-form">
+                  <div class="field full">
+                    <label>Customer Type</label>
+                    <div class="segmented" data-tier-control>
+                      <button class="segment active" data-tier="standard">Standard</button>
+                      <button class="segment" data-tier="regular">Regular</button>
+                      <button class="segment" data-tier="vip">VIP</button>
+                    </div>
+                    <div class="tier-note" data-tier-note>Standard walk-in pricing.</div>
+                  </div>
+                  <div class="field full">
+                    <label for="wiz-desc">What are we quoting?</label>
+                    <input id="wiz-desc" data-desc value="3D LED shop name">
+                  </div>
+                  <div class="field">
+                    <label for="wiz-material">Product</label>
+                    <select id="wiz-material" data-material>
+                      <option value="led-3d">3D LED Letter</option>
+                      <option value="led-3d-uv">3D LED with UV Sticker</option>
+                      <option value="tarpaulin-solvent">Tarpaulin Solvent</option>
+                      <option value="tarpaulin-uv">Tarpaulin UV</option>
                     </select>
+                  </div>
+                  <div class="field">
+                    <label for="wiz-qty">Quantity</label>
+                    <input id="wiz-qty" data-height type="number" min="1" step="1" value="18">
+                  </div>
+                  <div class="field">
+                    <label for="wiz-width">Letter Height / Width</label>
+                    <input id="wiz-width" data-width type="number" min="0.1" step="0.5" value="15">
+                  </div>
+                  <div class="field">
+                    <label>Approximation</label>
+                    <select>
+                      <option>Round each unit to nearest RM</option>
+                      <option>Use exact decimal amount</option>
+                    </select>
+                  </div>
                 </div>
-            </div>
-            
-            <!-- 3D LED专用计算器 -->
-            <div class="led-calculator" id="ledCalculator">
-                <div class="led-input-row">
-                    <div class="input-group">
-                        <label for="ledHeight">Letter Height (cm)</label>
-                        <input type="number" id="ledHeight" 
-                               placeholder="e.g., 15" min="1" value="15" step="0.5">
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="ledQuantity">Quantity (units)</label>
-                        <input type="number" id="ledQuantity" 
-                               placeholder="e.g., 22" min="1" value="1" step="1">
-                    </div>
+                <div class="workflow-footer">
+                  <button class="btn" type="button">Back</button>
+                  <button class="btn primary" type="button" data-add-current><span class="icon add"></span>Add item</button>
                 </div>
-                
-                <div class="led-result" id="ledPreview">
-                    <strong>Calculation:</strong><br>
-                    <span id="calculationDetail">15 cm × RM 4.50 = RM 67.50</span><br>
-                    <span id="roundedDetail">Rounded to: RM 68.00</span><br>
-                    <span id="finalDetail">× 22 units = <strong>RM 1,496.00</strong></span>
+              </div>
+            </section>
+
+            <aside class="panel">
+              <div class="panel-header">
+                <div>
+                  <h2 class="panel-title">Live Check</h2>
+                  <p class="panel-subtitle">Formula stays visible</p>
                 </div>
-                
-                <div class="calculator-info">
-                    <strong>📝 How 3D LED pricing works:</strong>
-                    <ul>
-                        <li>Price = Letter Height (cm) × Price per cm</li>
-                        <li>Result rounded to nearest RM (e.g., 67.50 → 68.00)</li>
-                        <li>Then multiplied by quantity</li>
-                    </ul>
-                    <div style="margin-top: 5px;">
-                        <strong>Example:</strong> 15cm × RM4.50 = RM67.50 → RM68 × 22 units = RM1,496
-                    </div>
+              </div>
+              <div class="panel-body summary-stack">
+                <div class="metric">
+                  <span>Selected tier</span>
+                  <strong data-tier-label>Standard</strong>
                 </div>
-            </div>
-            
-            <!-- 自定义材料区域 -->
-            <div class="custom-material-section" id="customMaterialSection">
-                <div class="custom-input-row">
-                    <div class="input-group">
-                        <label for="customMaterialName">Material Name</label>
-                        <input type="text" id="customMaterialName" 
-                               placeholder="e.g., Sticker Vinyl, Banner Stand">
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="customUnitPrice">Price per cm</label>
-                        <input type="number" id="customUnitPrice" 
-                               step="0.10" value="0.20" min="0">
-                    </div>
+                <div class="metric">
+                  <span>Items</span>
+                  <strong data-item-count>0</strong>
                 </div>
-                
-                <div class="custom-note">
-                    📏 Custom materials are calculated in <strong>centimeters</strong>. 
-                    Size inputs above are treated as cm × unit.
+                <div class="total-card">
+                  <div class="total-line">
+                    <span>Current total</span>
+                    <strong data-subtotal>RM 0.00</strong>
+                  </div>
+                  <div class="grand">
+                    <span>Payable</span>
+                    <span data-grand-total>RM 0.00</span>
+                  </div>
                 </div>
-            </div>
-            
-            <button class="add-btn" id="addItemBtn">
-                <span style="font-size: 1.5rem;">+</span> Add Item to Quotation
-            </button>
-            
-            <!-- 项目列表 -->
-            <div class="items-container">
-                <div class="items-header">
-                    <div>Description</div>
-                    <div>Size</div>
-                    <div>Quantity</div>
-                    <div>Unit Price</div>
-                    <div>Subtotal</div>
-                    <div></div>
+                <div class="ai-box">
+                  <strong>KH Quote Assistant</strong>
+                  <p>Ask for help estimating materials, sizes, quantities, or quote wording.</p>
                 </div>
-                <div id="itemsList"></div>
-            </div>
-            
-            <!-- 备注区域 -->
-            <div class="notes-section">
-                <label for="printingNotes">📝 Notes (Optional)</label>
-                <textarea id="printingNotes" placeholder="e.g., Customer provides own design
-e.g., Walk-in customer, will collect tomorrow
-e.g., Special discount applied"></textarea>
-            </div>
-            
-            <!-- 总计区域 -->
-            <div class="total-section">
-                <div class="total-row">
-                    <span>Total Items:</span>
-                    <span id="totalItems">0</span>
-                </div>
-                <div class="total-row">
-                    <span>Subtotal:</span>
-                    <span id="subtotal">RM 0.00</span>
-                </div>
-                <div class="total-row grand-total">
-                    <span>GRAND TOTAL:</span>
-                    <span id="grandTotal">RM 0.00</span>
-                </div>
-                <div style="margin-top: 15px; font-size: 0.9rem; opacity: 0.8;">
-                    Current pricing: <strong id="currentPricing">Standard</strong>
-                </div>
-            </div>
-            
-            <!-- 操作按钮 -->
-            <div class="action-buttons">
-                <button class="action-btn print-btn" id="printBtn">
-                    🖨️ Print Quote
-                </button>
-                <button class="action-btn save-btn" id="saveBtn">
-                    💾 Save Settings
-                </button>
-                <!-- Fixed: inline style extracted to .reset-prices-btn class in <head> -->
-                <button class="action-btn reset-prices-btn" id="resetPricesBtn">🔄 Reset Prices</button>
-                <button class="action-btn reset-btn" id="resetBtn">
-                    🔄 New Quote
-                </button>
-            </div>
+              </div>
+            </aside>
+          </div>
         </div>
+      </section>
+
+      <section class="view" id="view-preview">
+        <div class="preview-layout">
+          <aside class="panel quick-panel">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Quick Add</h2>
+                <p class="panel-subtitle">Everything updates the customer document</p>
+              </div>
+            </div>
+            <div class="panel-body dash-form">
+              <div class="field">
+                <label for="prev-desc">Description</label>
+                <input id="prev-desc" data-desc value="UV tarpaulin signage">
+              </div>
+              <div class="two">
+                <div class="field">
+                  <label for="prev-width">Width</label>
+                  <input id="prev-width" data-width type="number" min="0.1" step="0.1" value="10">
+                </div>
+                <div class="field">
+                  <label for="prev-height">Height</label>
+                  <input id="prev-height" data-height type="number" min="0.1" step="0.1" value="4">
+                </div>
+              </div>
+              <div class="field">
+                <label for="prev-material">Material</label>
+                <select id="prev-material" data-material>
+                  <option value="tarpaulin-uv">Tarpaulin UV</option>
+                  <option value="tarpaulin-solvent">Tarpaulin Solvent</option>
+                  <option value="led-3d">3D LED Letter</option>
+                  <option value="led-3d-uv">3D LED with UV Sticker</option>
+                </select>
+              </div>
+              <button class="btn primary" type="button" data-add-current><span class="icon add"></span>Add to document</button>
+              <div class="design-fee-box">
+                <div class="field">
+                  <label for="prev-design-fee">Design Fee</label>
+                  <input id="prev-design-fee" data-design-fee type="number" min="0" step="5" value="80">
+                </div>
+                <button class="btn" type="button" data-add-design-fee>Add / update design fee</button>
+              </div>
+              <div class="quick-remove">
+                <div class="quick-remove-head">
+                  <strong>Quote Items</strong>
+                  <span data-item-count>0 items</span>
+                </div>
+                <div data-quick-remove-list></div>
+              </div>
+              <div class="status-row"><span>Quote No.</span><strong>KH-260527</strong></div>
+              <div class="status-row"><span>Validity</span><strong>30 days</strong></div>
+              <div class="status-row"><span>Terms</span><strong>C.O.D</strong></div>
+            </div>
+          </aside>
+
+          <section class="quote-paper" aria-label="Quotation preview">
+            <div class="paper-head">
+              <div class="paper-logo">
+                <img class="paper-brand-logo" src="https://raw.githubusercontent.com/pacguy-mtk/calculator/refs/heads/main/z2026-02-08-13.12.11.jpeg" alt="KH Sign Media logo">
+                <div>
+                  <h2>KH Sign Media</h2>
+                  <p>Signage, printing and LED quotation</p>
+                </div>
+              </div>
+              <div class="paper-meta">
+                <h3>Quotation</h3>
+                <p>No. KH-260527</p>
+                <p>27 May 2026</p>
+              </div>
+            </div>
+
+            <div class="bill-row">
+              <div class="bill-box">
+                <strong>Bill To</strong>
+                Walk-in Customer<br>
+                Standard pricing
+              </div>
+              <div class="bill-box">
+                <strong>Prepared By</strong>
+                KH Sign Media Team<br>
+                Valid for 30 days
+              </div>
+            </div>
+
+            <table class="quote-table paper-table">
+              <thead>
+                <tr>
+                  <th>Description</th>
+                  <th>Size</th>
+                  <th>Qty</th>
+                  <th>Unit</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody data-paper-rows></tbody>
+            </table>
+
+            <div class="paper-total">
+              <div class="total-line" style="color: var(--ink); border-color: var(--line);">
+                <span>Subtotal</span>
+                <strong data-subtotal>RM 0.00</strong>
+              </div>
+              <div class="grand" style="color: var(--ink);">
+                <span>Total</span>
+                <span data-grand-total>RM 0.00</span>
+              </div>
+            </div>
+
+            <div class="terms">
+              C.O.D terms. Price is valid for 30 days unless material cost changes. Production starts after confirmation and artwork approval.
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="price-modal" data-price-modal aria-hidden="true">
+    <div class="price-dialog" role="dialog" aria-modal="true" aria-labelledby="priceDialogTitle">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title" id="priceDialogTitle">Price Settings</h2>
+          <p class="panel-subtitle">Edit material rates for each customer tier</p>
+        </div>
+        <button class="btn" type="button" data-close-prices>Close</button>
+      </div>
+      <div class="panel-body settings-list">
+        <div class="segmented" data-tier-control>
+          <button class="segment active" data-tier="standard">Standard</button>
+          <button class="segment" data-tier="regular">Regular</button>
+          <button class="segment" data-tier="vip">VIP</button>
+        </div>
+        <div class="tier-note" data-tier-note>Standard walk-in pricing.</div>
+        <div class="settings-row">
+          <div><strong>Tarpaulin Solvent</strong><span>Per sqft</span></div>
+          <input data-price-field="tarpaulin-solvent" type="number" min="0" step="0.05" value="2.00" aria-label="Tarpaulin Solvent price modal">
+        </div>
+        <div class="settings-row">
+          <div><strong>Tarpaulin UV</strong><span>Per sqft</span></div>
+          <input data-price-field="tarpaulin-uv" type="number" min="0" step="0.05" value="4.00" aria-label="Tarpaulin UV price modal">
+        </div>
+        <div class="settings-row">
+          <div><strong>3D LED Letter</strong><span>Per cm</span></div>
+          <input data-price-field="led-3d" type="number" min="0" step="0.05" value="6.00" aria-label="3D LED Letter price modal">
+        </div>
+        <div class="settings-row">
+          <div><strong>3D LED with UV Sticker</strong><span>Per cm</span></div>
+          <input data-price-field="led-3d-uv" type="number" min="0" step="0.05" value="7.00" aria-label="3D LED with UV Sticker price modal">
+        </div>
+        <div class="settings-row">
+          <div><strong>Design Fees</strong><span>Minimum charge</span></div>
+          <input data-price-field="design-fees" type="number" min="0" step="5" value="80.00" aria-label="Design fees price modal">
+        </div>
+        <button class="btn" type="button" data-reset-prices>Reset default prices</button>
+        <div class="drawer-note">Prices apply to new quote items and can be adjusted for standard, regular, and VIP customers.</div>
+      </div>
     </div>
+  </div>
 
-    <script>
-        // ==================== 简洁的价格管理系统 ====================
-        
-        // 默认价格配置（三种客户类型）
-        const defaultPrices = {
-            'standard': {  // 标准价格
-                'tarpaulin-solvent': 2.00,
-                'tarpaulin-uv': 4.00,
-                'led-3d': 6.00,
-                'led-3d-uv': 7.00,
-                'led-3d-special': 4.50,
-                'design-fees': 80.00
-            },
-            'regular': {   // 常客价格
-                'tarpaulin-solvent': 1.80,
-                'tarpaulin-uv': 3.50,
-                'led-3d': 5.50,
-                'led-3d-uv': 6.50,
-                'led-3d-special': 4.00,
-                'design-fees': 70.00
-            },
-            'vip': {       // VIP价格
-                'tarpaulin-solvent': 1.70,
-                'tarpaulin-uv': 3.50,
-                'led-3d': 5.00,
-                'led-3d-uv': 6.00,
-                'led-3d-special': 3.80,
-                'design-fees': 65.00
-            }
-        };
-        
-        // 当前价格配置（从localStorage加载或使用默认值）
-        let priceConfig = JSON.parse(localStorage.getItem('keehup_prices')) || { ...defaultPrices };
-        
-        // 近似值配置
-        const defaultRoundingConfig = {
-            'led-3d': true,
-            'led-3d-uv': true,
-            'led-3d-special': true
-        };
-        
-        // 加载保存的近似值设置
-        const savedRounding = JSON.parse(localStorage.getItem('keehup_rounding'));
-        let roundingConfig = savedRounding ? { ...defaultRoundingConfig, ...savedRounding } : { ...defaultRoundingConfig };
-        
-        let currentCustomerType = 'standard';
-        let items = [];
-        
-        // 最低价格限制
-        const MIN_TARPAULIN_CHARGE = 30.00;
-        const MIN_CUSTOM_CHARGE = 20.00; // 自定义材料最低收费
-        
-        // DOM元素
-        const priceToggle = document.getElementById('priceToggle');
-        const priceContent = document.getElementById('priceContent');
-        const customerTabs = document.getElementById('customerTabs');
-        const priceSolventInput = document.getElementById('priceSolvent');
-        const priceUVInput = document.getElementById('priceUV');
-        const priceDesignInput = document.getElementById('priceDesign');
-        const priceLed3dInput = document.getElementById('priceLed3d');
-        const priceLed3dUvInput = document.getElementById('priceLed3dUv');
-        const priceLed3dSpecialInput = document.getElementById('priceLed3dSpecial');
-        const currentPricingSpan = document.getElementById('currentPricing');
-        const materialTypeSelect = document.getElementById('materialType');
-        const customMaterialSection = document.getElementById('customMaterialSection');
-        const ledCalculator = document.getElementById('ledCalculator');
-        
-        // ==================== 3D LED计算函数 ====================
-        
-        function calculate3DLedPrice(materialType) {
-            const height = parseFloat(document.getElementById('ledHeight').value) || 0;
-            const quantity = parseInt(document.getElementById('ledQuantity').value) || 0;
-            
-            if (height <= 0 || quantity <= 0) return 0;
-            
-            const pricePerCm = getCurrentPrice(materialType);
-            const exactPrice = height * pricePerCm;
-            const useRounding = roundingConfig[materialType];
-            
-            // 应用近似值计算
-            let roundedPrice;
-            if (useRounding) {
-                // 四舍五入到最接近的整数
-                roundedPrice = Math.round(exactPrice);
-            } else {
-                // 保留两位小数
-                roundedPrice = Math.round(exactPrice * 100) / 100;
-            }
-            
-            const total = roundedPrice * quantity;
-            
-            // 更新预览
-            const materialNames = {
-                'led-3d': '3D LED Letter',
-                'led-3d-uv': '3D LED Letter with UV Sticker',
-                'led-3d-special': '3D LED Letter Special Price'
-            };
-            
-            const previewHTML = `
-                <strong>Calculation for ${materialNames[materialType]}:</strong><br>
-                <span id="calculationDetail">${height.toFixed(1)} cm × RM ${pricePerCm.toFixed(2)} = RM ${exactPrice.toFixed(2)}</span><br>
-                ${useRounding ? 
-                    `<span id="roundedDetail">Rounded to: <strong>RM ${roundedPrice.toFixed(2)}</strong></span><br>` : 
-                    `<span id="roundedDetail">Exact price: RM ${roundedPrice.toFixed(2)}</span><br>`}
-                <span id="finalDetail">× ${quantity} units = <strong>RM ${total.toFixed(2)}</strong></span>
-            `;
-            
-            document.getElementById('ledPreview').innerHTML = previewHTML;
-            
-            return {
-                exactPrice,
-                roundedPrice,
-                total,
-                height,
-                quantity
-            };
-        }
-        
-        // ==================== 初始化价格系统 ====================
-        
-        function initPriceSystem() {
-            // 加载保存的价格配置
-            loadPriceConfig();
-            
-            // 折叠面板切换
-            priceToggle.addEventListener('click', function() {
-                priceContent.classList.toggle('active');
-                this.classList.toggle('active');
-            });
-            
-            // 客户类型切换
-            customerTabs.querySelectorAll('.customer-tab').forEach(tab => {
-                tab.addEventListener('click', function() {
-                    currentCustomerType = this.dataset.type;
-                    
-                    // 更新标签状态
-                    customerTabs.querySelectorAll('.customer-tab').forEach(t => {
-                        t.classList.remove('active');
-                    });
-                    this.classList.add('active');
-                    
-                    // 加载该客户类型的价格
-                    loadPricesForCustomer(currentCustomerType);
-                    updateCurrentPricingDisplay();
-                });
-            });
-            
-            // 价格输入变化时保存
-            [priceSolventInput, priceUVInput, priceDesignInput, priceLed3dInput, priceLed3dUvInput, priceLed3dSpecialInput].forEach(input => {
-                input.addEventListener('input', function() {
-                    saveCurrentPrices();
-                });
-            });
-            
-            // 设计费用可以设为0
-            priceDesignInput.min = 0;
-            
-            // 材料类型切换
-            materialTypeSelect.addEventListener('change', function() {
-                updateMaterialType();
-            });
-            
-            // 初始化显示
-            loadPricesForCustomer(currentCustomerType);
-            updateCurrentPricingDisplay();
-            updateMaterialType();
-        }
-        
-        // 更新材料类型显示
-        function updateMaterialType() {
-            const selectedType = materialTypeSelect.value;
-            
-            // 显示/隐藏3D LED计算器
-            if (selectedType === 'led-3d' || selectedType === 'led-3d-uv' || selectedType === 'led-3d-special') {
-                ledCalculator.classList.add('active');
-                customMaterialSection.classList.remove('active');
-                update3DLedCalculator();
-            } else if (selectedType === 'custom') {
-                // 显示自定义材料区域
-                ledCalculator.classList.remove('active');
-                customMaterialSection.classList.add('active');
-                
-                // 更新尺寸提示
-                document.getElementById('sqftDisplay').innerHTML = 
-                    'Size in <strong>centimeters</strong> (cm × unit)';
-                
-                // 更新占位符
-                document.getElementById('width').placeholder = 'Width (cm)';
-                document.getElementById('height').placeholder = 'Height (unit)';
-            } else {
-                // 隐藏所有特殊计算器
-                ledCalculator.classList.remove('active');
-                customMaterialSection.classList.remove('active');
-                
-                // 恢复平方英尺显示
-                const width = parseFloat(document.getElementById('width').value) || 0;
-                const height = parseFloat(document.getElementById('height').value) || 0;
-                const totalSqft = (width * height).toFixed(2);
-                
-                document.getElementById('sqftDisplay').innerHTML = 
-                    `Total Area: <span id="totalSqft">${totalSqft}</span> sqft`;
-                
-                // 恢复占位符
-                document.getElementById('width').placeholder = 'Width';
-                document.getElementById('height').placeholder = 'Height';
-                
-                // 如果是设计费，禁用高度输入
-                if (selectedType === 'design-fees') {
-                    document.getElementById('height').disabled = true;
-                    document.getElementById('height').value = 1;
-                    document.getElementById('sqftDisplay').innerHTML = 
-                        'Minimum charge applies';
-                } else {
-                    document.getElementById('height').disabled = false;
-                }
-            }
-        }
-        
-        // 更新3D LED计算器
-        function update3DLedCalculator() {
-            const selectedType = materialTypeSelect.value;
-            if (selectedType === 'led-3d' || selectedType === 'led-3d-uv' || selectedType === 'led-3d-special') {
-                calculate3DLedPrice(selectedType);
-            }
-        }
-        
-        // 加载价格配置
-        function loadPriceConfig() {
-            // 确保每种客户类型都有完整的配置
-            ['standard', 'regular', 'vip'].forEach(type => {
-                if (!priceConfig[type]) {
-                    priceConfig[type] = { ...defaultPrices[type] };
-                }
-            });
-        }
-        
-        // 加载指定客户类型的价格到输入框
-        function loadPricesForCustomer(customerType) {
-            const prices = priceConfig[customerType];
-            
-            priceSolventInput.value = prices['tarpaulin-solvent'].toFixed(2);
-            priceUVInput.value = prices['tarpaulin-uv'].toFixed(2);
-            priceLed3dInput.value = prices['led-3d'].toFixed(2);
-            priceLed3dUvInput.value = prices['led-3d-uv'].toFixed(2);
-            priceLed3dSpecialInput.value = prices['led-3d-special'].toFixed(2);
-            priceDesignInput.value = prices['design-fees'].toFixed(2);
-        }
-        
-        // 保存当前价格到配置
-        function saveCurrentPrices() {
-            priceConfig[currentCustomerType] = {
-                'tarpaulin-solvent': parseFloat(priceSolventInput.value) || 0,
-                'tarpaulin-uv': parseFloat(priceUVInput.value) || 0,
-                'led-3d': parseFloat(priceLed3dInput.value) || 0,
-                'led-3d-uv': parseFloat(priceLed3dUvInput.value) || 0,
-                'led-3d-special': parseFloat(priceLed3dSpecialInput.value) || 0,
-                'design-fees': parseFloat(priceDesignInput.value) || 0
-            };
-            
-            localStorage.setItem('keehup_prices', JSON.stringify(priceConfig));
-            
-            console.log(`Prices saved for ${currentCustomerType} customer`);
-        }
-        
-        // 更新当前定价显示
-        function updateCurrentPricingDisplay() {
-            const displayNames = {
-                'standard': 'Standard Pricing',
-                'regular': 'Regular Customer Pricing',
-                'vip': 'VIP Customer Pricing'
-            };
-            
-            currentPricingSpan.textContent = displayNames[currentCustomerType];
-        }
-        
-        // 保存设置到本地
-        function saveSettings() {
-            saveCurrentPrices();
-            saveRoundingConfig();
-            alert('Price settings saved successfully!');
-        }
-        
-        // ==================== 近似值设置 ====================
-        
-        function loadRoundingSettings() {
-            document.getElementById('roundingLed3d').checked = roundingConfig['led-3d'];
-            document.getElementById('roundingLed3dUv').checked = roundingConfig['led-3d-uv'];
-            document.getElementById('roundingLed3dSpecial').checked = roundingConfig['led-3d-special'];
-        }
-        
-        function saveRoundingConfig() {
-            localStorage.setItem('keehup_rounding', JSON.stringify(roundingConfig));
-        }
-        
-        // ==================== 项目管理系统 ====================
-        
-        // 获取材料显示名称
-        function getMaterialDisplayName(materialType) {
-            const names = {
-                'tarpaulin-solvent': 'Tarpaulin Solvent',
-                'tarpaulin-uv': 'Tarpaulin UV',
-                'led-3d': '3D LED Letter',
-                'led-3d-uv': '3D LED Letter with UV Sticker',
-                'led-3d-special': '3D LED Letter Special Price',
-                'design-fees': 'Design Fees',
-                'custom': 'Custom Material'
-            };
-            return names[materialType] || materialType;
-        }
-        
-        // 获取当前价格
-        function getCurrentPrice(materialType) {
-            const prices = priceConfig[currentCustomerType];
-            return prices[materialType] || 0;
-        }
-        
-        // 计算面积
-        function calculateArea() {
-            const width = parseFloat(document.getElementById('width').value) || 0;
-            const height = parseFloat(document.getElementById('height').value) || 0;
-            const materialType = document.getElementById('materialType').value;
-            
-            if (materialType === 'custom') {
-                // 自定义材料按厘米计算
-                const areaCm = (width * height).toFixed(2);
-                return parseFloat(areaCm);
-            } else if (materialType === 'led-3d' || materialType === 'led-3d-uv' || materialType === 'led-3d-special') {
-                // 3D LED材料使用专用计算器
-                return 0;
-            } else {
-                // 普通材料按平方英尺计算
-                const totalSqft = (width * height).toFixed(2);
-                document.getElementById('totalSqft').textContent = totalSqft;
-                return parseFloat(totalSqft);
-            }
-        }
-        
-        // 添加项目
-        function addItem() {
-            const name = document.getElementById('itemName').value.trim();
-            const width = parseFloat(document.getElementById('width').value) || 0;
-            const height = parseFloat(document.getElementById('height').value) || 0;
-            const materialType = document.getElementById('materialType').value;
-            
-            if (!name) {
-                alert('Please enter item description');
-                return;
-            }
-            
-            // 获取当前价格和材料名称
-            let unitPrice, materialName, unit, quantity, sizeDisplay, subtotal;
-            
-            // 如果是3D LED材料，使用专用计算器
-            if (materialType === 'led-3d' || materialType === 'led-3d-uv' || materialType === 'led-3d-special') {
-                const ledHeight = parseFloat(document.getElementById('ledHeight').value) || 0;
-                const ledQuantity = parseInt(document.getElementById('ledQuantity').value) || 0;
-                
-                if (ledHeight <= 0) {
-                    alert('Please enter letter height');
-                    return;
-                }
-                
-                if (ledQuantity <= 0) {
-                    alert('Please enter quantity');
-                    return;
-                }
-                
-                const calculation = calculate3DLedPrice(materialType);
-                unitPrice = getCurrentPrice(materialType);
-                materialName = getMaterialDisplayName(materialType);
-                unit = 'units';
-                quantity = ledQuantity;
-                sizeDisplay = `${ledHeight.toFixed(1)} cm height × ${ledQuantity} units`;
-                subtotal = calculation.total;
-                
-            } else if (materialType === 'custom') {
-                materialName = document.getElementById('customMaterialName').value.trim() || 'Custom Material';
-                unitPrice = parseFloat(document.getElementById('customUnitPrice').value) || 0;
-                unit = 'cm/line';
-                quantity = width * height; // 平方厘米
-                sizeDisplay = `${width.toFixed(1)} × ${height.toFixed(1)} cm/line`;
-                subtotal = quantity * unitPrice;
-                
-                // 应用最低收费
-                if (subtotal < MIN_CUSTOM_CHARGE) {
-                    subtotal = MIN_CUSTOM_CHARGE;
-                }
-                
-            } else if (materialType === 'design-fees') {
-                materialName = 'Design Fees';
-                unitPrice = getCurrentPrice(materialType);
-                unit = 'minimum';
-                quantity = 1; // 设计费按最低收费计算
-                sizeDisplay = 'Design Service';
-                subtotal = unitPrice;
-                
-            } else {
-                materialName = getMaterialDisplayName(materialType);
-                unitPrice = getCurrentPrice(materialType);
-                unit = 'sqft';
-                quantity = width * height;
-                sizeDisplay = `${width.toFixed(1)} × ${height.toFixed(1)} ft`;
-                subtotal = quantity * unitPrice;
-                
-                // 应用最低收费
-                if (subtotal < MIN_TARPAULIN_CHARGE) {
-                    subtotal = MIN_TARPAULIN_CHARGE;
-                }
-            }
-            
-            // 创建项目对象
-            const item = {
-                id: Date.now(),
-                name,
-                materialName,
-                materialType,
-                sizeDisplay,
-                quantity: parseFloat(quantity.toFixed(2)),
-                unit,
-                unitPrice: parseFloat(unitPrice.toFixed(2)),
-                subtotal: parseFloat(subtotal.toFixed(2)),
-                customerType: currentCustomerType
-            };
-            
-            // 如果是3D LED材料，添加额外信息
-            if (materialType === 'led-3d' || materialType === 'led-3d-uv' || materialType === 'led-3d-special') {
-                const ledHeight = parseFloat(document.getElementById('ledHeight').value) || 0;
-                const calculation = calculate3DLedPrice(materialType);
-                item.height = ledHeight;
-                item.roundedPrice = calculation.roundedPrice;
-                item.isRounded = roundingConfig[materialType];
-            }
-            
-            // 添加到列表
-            items.push(item);
-            
-            // 更新显示
-            renderItems();
-            updateTotals();
-            
-            // 重置表单
-            resetForm();
-            
-            console.log(`Added: ${name} - RM ${subtotal.toFixed(2)}`);
-        }
-        
-        // 重置表单
-        function resetForm() {
-            document.getElementById('itemName').value = '';
-            document.getElementById('width').value = 1;
-            document.getElementById('height').value = 1;
-            document.getElementById('ledHeight').value = 15;
-            document.getElementById('ledQuantity').value = 1;
-            
-            if (materialTypeSelect.value === 'custom') {
-                document.getElementById('customMaterialName').value = '';
-                document.getElementById('customUnitPrice').value = '0.20';
-            }
-            
-            // 重新计算面积
-            calculateArea();
-        }
-        
-        // 渲染项目列表
-        function renderItems() {
-            const itemsList = document.getElementById('itemsList');
-            itemsList.innerHTML = '';
-            
-            if (items.length === 0) {
-                const emptyRow = document.createElement('div');
-                emptyRow.className = 'item-row';
-                emptyRow.style.textAlign = 'center';
-                emptyRow.style.padding = '30px';
-                emptyRow.style.color = '#999';
-                emptyRow.textContent = 'No items added yet. Add items to create a quotation.';
-                itemsList.appendChild(emptyRow);
-                return;
-            }
-            
-            items.forEach(item => {
-                const row = document.createElement('div');
-                row.className = 'item-row';
-                
-                // 如果是3D LED材料，显示详细信息
-                if (item.materialType === 'led-3d' || item.materialType === 'led-3d-uv' || item.materialType === 'led-3d-special') {
-                    const originalPrice = item.height * item.unitPrice;
-                    const roundedBadge = item.isRounded ? 
-                        `<span class="rounded-badge">Rounded</span>` : '';
-                    
-                    row.innerHTML = `
-                        <div>
-                            <strong>${item.name}</strong>
-                            <div style="font-size: 0.9rem; color: #666;">
-                                ${item.materialName} ${roundedBadge}
-                            </div>
-                        </div>
-                        <div>${item.sizeDisplay}</div>
-                        <div>${item.quantity} ${item.unit}</div>
-                        <div>
-                            <div>${item.height.toFixed(1)} cm × RM ${item.unitPrice.toFixed(2)}</div>
-                            <div style="font-size: 0.8rem; color: #666;">
-                                <span class="original-price">RM ${originalPrice.toFixed(2)}</span>
-                                → RM ${item.roundedPrice.toFixed(2)}
-                            </div>
-                        </div>
-                        <div><strong>RM ${item.subtotal.toFixed(2)}</strong></div>
-                        <div>
-                            <button class="delete-btn" onclick="deleteItem(${item.id})">×</button>
-                        </div>
-                    `;
-                } else {
-                    row.innerHTML = `
-                        <div>
-                            <strong>${item.name}</strong>
-                            <div style="font-size: 0.9rem; color: #666;">${item.materialName}</div>
-                        </div>
-                        <div>${item.sizeDisplay}</div>
-                        <div>${item.quantity.toFixed(2)} ${item.unit}</div>
-                        <div>RM ${item.unitPrice.toFixed(2)}</div>
-                        <div><strong>RM ${item.subtotal.toFixed(2)}</strong></div>
-                        <div>
-                            <button class="delete-btn" onclick="deleteItem(${item.id})">×</button>
-                        </div>
-                    `;
-                }
-                
-                itemsList.appendChild(row);
-            });
-        }
-        
-        // 删除项目
-        function deleteItem(id) {
-            items = items.filter(item => item.id !== id);
-            renderItems();
-            updateTotals();
-        }
-        
-        // 更新总计
-        function updateTotals() {
-            const subtotal = items.reduce((sum, item) => sum + item.subtotal, 0);
-            
-            document.getElementById('totalItems').textContent = items.length;
-            document.getElementById('subtotal').textContent = `RM ${subtotal.toFixed(2)}`;
-            document.getElementById('grandTotal').textContent = `RM ${subtotal.toFixed(2)}`;
-        }
-        
-        // 打印报价单
-        function printQuote() {
-            if (items.length === 0) {
-                alert('Please add items to the quotation first.');
-                return;
-            }
-            
-            const notes = document.getElementById('printingNotes').value.trim();
-            const customerTypeNames = {
-                'standard': 'Standard Customer',
-                'regular': 'Regular Customer',
-                'vip': 'VIP Customer'
-            };
-            
-            const printContent = `
-                <html>
-                    <head>
-                        <title>KH Sign Media's Quotation</title>
-                        <style>
-                            body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
-                            .header { text-align: center; margin-bottom: 30px; border-bottom: 3px solid #2c3e50; padding-bottom: 20px; }
-                            h1 { color: #2c3e50; margin: 0 0 10px 0; }
-                            .info { display: flex; justify-content: space-between; margin-bottom: 20px; }
-                            .notes { background: #fff3cd; padding: 15px; margin: 20px 0; border-radius: 5px; border: 1px solid #ffc107; }
-                            table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-                            th { background: #2c3e50; color: white; padding: 12px; text-align: left; }
-                            td { padding: 10px; border-bottom: 1px solid #ddd; }
-                            .total { text-align: right; margin-top: 30px; font-size: 18px; }
-                            .grand-total { font-size: 24px; font-weight: bold; color: #2c3e50; margin-top: 10px; }
-                            .footer { margin-top: 40px; text-align: center; color: #666; font-size: 0.9em; border-top: 1px solid #ddd; padding-top: 20px; }
-                        </style>
-                    </head>
-                    <body>
-                        <div class="header">
-                            <h1>KH Sign Media Quotation</h1>
-                            <div>Date: ${new Date().toLocaleDateString('en-MY')}</div>
-                            <div>Customer Type: ${customerTypeNames[currentCustomerType]}</div>
-                        </div>
-                        
-                        <div class="info">
-                            <div>Quotation No: KH-${Date.now().toString().slice(-6)}</div>
-                            <div>Prepared by: [Your Name]</div>
-                        </div>
-                        
-                        ${notes ? `
-                            <div class="notes">
-                                <strong>Notes:</strong><br>
-                                ${notes.replace(/\n/g, '<br>')}
-                            </div>
-                        ` : ''}
-                        
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Description</th>
-                                    <th>Size/Details</th>
-                                    <th>Quantity</th>
-                                    <th>Unit Price</th>
-                                    <th>Subtotal</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${items.map(item => `
-                                    <tr>
-                                        <td>${item.name}<br><small>${item.materialName}</small></td>
-                                        <td>${item.sizeDisplay}</td>
-                                        <td>${item.quantity.toFixed(2)} ${item.unit}</td>
-                                        <td>RM ${item.unitPrice.toFixed(2)}</td>
-                                        <td>RM ${item.subtotal.toFixed(2)}</td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                        
-                        <div class="total">
-                            <div>Subtotal: RM ${items.reduce((s, i) => s + i.subtotal, 0).toFixed(2)}</div>
-                            <div class="grand-total">GRAND TOTAL: RM ${items.reduce((s, i) => s + i.subtotal, 0).toFixed(2)}</div>
-                        </div>
-                        
-                        <div class="footer">
-                            <p>Thank you for your business!</p>
-                            <p>KH Sign Media Co.</p>
-                            <p>C.O.D Terms | Valid for 30 days</p>
-                        </div>
-                    </body>
-                </html>
-            `;
-            
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(printContent);
-            printWindow.document.close();
-            printWindow.focus();
-            
-            setTimeout(() => {
-                printWindow.print();
-                printWindow.close();
-            }, 500);
-        }
-        
-        // 重置报价单
-        function resetQuote() {
-            if (items.length === 0 || confirm('Start a new quotation? Current items will be cleared.')) {
-                items = [];
-                renderItems();
-                updateTotals();
-                document.getElementById('printingNotes').value = '';
-            }
-        }
-        
-        // ==================== 初始化 ====================
-        
-        function init() {
-            // 初始化价格系统
-            initPriceSystem();
-            
-            // 事件监听
-            document.getElementById('width').addEventListener('input', calculateArea);
-            document.getElementById('height').addEventListener('input', calculateArea);
-            document.getElementById('addItemBtn').addEventListener('click', addItem);
-            document.getElementById('printBtn').addEventListener('click', printQuote);
-            document.getElementById('saveBtn').addEventListener('click', saveSettings);
-            document.getElementById('resetBtn').addEventListener('click', resetQuote);
-            
-            // 3D LED计算器事件
-            document.getElementById('ledHeight').addEventListener('input', function() {
-                update3DLedCalculator();
-            });
-            
-            document.getElementById('ledQuantity').addEventListener('input', function() {
-                update3DLedCalculator();
-            });
-            
-            // 近似值开关事件
-            document.getElementById('roundingLed3d').addEventListener('change', function() {
-                roundingConfig['led-3d'] = this.checked;
-                saveRoundingConfig();
-                update3DLedCalculator();
-            });
-            
-            document.getElementById('roundingLed3dUv').addEventListener('change', function() {
-                roundingConfig['led-3d-uv'] = this.checked;
-                saveRoundingConfig();
-                update3DLedCalculator();
-            });
-            
-            document.getElementById('roundingLed3dSpecial').addEventListener('change', function() {
-                roundingConfig['led-3d-special'] = this.checked;
-                saveRoundingConfig();
-                update3DLedCalculator();
-            });
-            
-            // 加载近似值设置
-            loadRoundingSettings();
-            
-            // 初始计算
-            calculateArea();
-            renderItems();
-            updateTotals();
-            
-            // 键盘快捷键
-            document.addEventListener('keydown', function(e) {
-                if (e.ctrlKey && e.key === 'Enter') {
-                    addItem();
-                }
-                if (e.key === 'Escape' && confirm('Clear all items?')) {
-                    resetQuote();
-                }
-            });
-            
-            // Fixed: resetPricesBtn listener was split into a separate <script> block at the
-            // bottom of the page alongside the AI chat code. Moved here into init() where
-            // all other button listeners live.
-            document.getElementById('resetPricesBtn')?.addEventListener('click', function() {
-                if (confirm('Reset all prices to default?')) {
-                    localStorage.removeItem('keehup_prices');
-                    location.reload();
-                }
-            });
+  <script>
+    const defaultPrices = {
+      standard: {
+        "tarpaulin-solvent": 2,
+        "tarpaulin-uv": 4,
+        "led-3d": 6,
+        "led-3d-uv": 7,
+        "design-fees": 80
+      },
+      regular: {
+        "tarpaulin-solvent": 2,
+        "tarpaulin-uv": 3.8,
+        "led-3d": 6,
+        "led-3d-uv": 7,
+        "design-fees": 80
+      },
+      vip: {
+        "tarpaulin-solvent": 2,
+        "tarpaulin-uv": 3.8,
+        "led-3d": 5.7,
+        "led-3d-uv": 6.65,
+        "design-fees": 80
+      }
+    };
 
-            console.log('✅ KH Sign Media Quotation System Ready!');
-            console.log('Features: 3D LED calculator, custom materials, flexible pricing.');
+    function clonePrices(source) {
+      return JSON.parse(JSON.stringify(source));
+    }
+
+    const priceStorageKey = "kh_redesign_prices";
+    let prices = clonePrices(defaultPrices);
+
+    try {
+      const savedPrices = JSON.parse(localStorage.getItem(priceStorageKey));
+      if (savedPrices) {
+        prices = { ...clonePrices(defaultPrices), ...savedPrices };
+      }
+    } catch {
+      prices = clonePrices(defaultPrices);
+    }
+
+    function savePrices() {
+      localStorage.setItem(priceStorageKey, JSON.stringify(prices));
+    }
+
+    const materialNames = {
+      "tarpaulin-solvent": "Tarpaulin Solvent",
+      "tarpaulin-uv": "Tarpaulin UV",
+      "led-3d": "3D LED Letter",
+      "led-3d-uv": "3D LED with UV Sticker",
+      "design-fees": "Design Fees"
+    };
+
+    const tierLabels = {
+      standard: "Standard",
+      regular: "Regular",
+      vip: "VIP"
+    };
+
+    const tierNotes = {
+      standard: "Standard walk-in pricing.",
+      regular: "Regular tier includes 5% off Tarpaulin UV.",
+      vip: "VIP member tier for bundle-buying customers. Includes 5% off Tarpaulin UV and 3D LED items."
+    };
+
+    const brandLogoUrl = "https://raw.githubusercontent.com/pacguy-mtk/calculator/refs/heads/main/z2026-02-08-13.12.11.jpeg";
+
+    const sqftMaterials = new Set(["tarpaulin-solvent", "tarpaulin-uv"]);
+    const ledMaterials = new Set(["led-3d", "led-3d-uv"]);
+
+    let activeTier = "standard";
+    let items = [
+      createItem("Opening banner", 8, 3, "tarpaulin-solvent"),
+      createItem("3D LED logo letters", 15, 18, "led-3d")
+    ];
+
+    function money(value) {
+      return `RM ${value.toFixed(2)}`;
+    }
+
+    function createItem(description, width, height, material, customPrice) {
+      const unitPrice = customPrice ?? prices[activeTier][material] ?? 0;
+      let quantity = width * height;
+      let unit = "sqft";
+      let size = `${width} x ${height} ft`;
+      let subtotal = Math.max(quantity * unitPrice, 30);
+
+      if (ledMaterials.has(material)) {
+        const roundedUnit = Math.round(width * unitPrice);
+        quantity = height;
+        unit = "units";
+        size = `${width} cm letter height`;
+        subtotal = roundedUnit * quantity;
+      }
+
+      if (material === "design-fees") {
+        quantity = 1;
+        unit = "job";
+        size = "Design service";
+        subtotal = unitPrice;
+      }
+
+      return {
+        id: crypto.randomUUID(),
+        description,
+        width,
+        height,
+        material,
+        size,
+        quantity,
+        unit,
+        unitPrice,
+        subtotal
+      };
+    }
+
+    function recalculateItems() {
+      items = items.map((item) => {
+        if (item.material === "design-fees") return item;
+        return createItem(item.description, item.width, item.height, item.material);
+      });
+    }
+
+    function readCurrentForm(source) {
+      const scope = source.closest(".view") || document;
+      return {
+        description: scope.querySelector("[data-desc]")?.value.trim() || "Quotation item",
+        width: parseFloat(scope.querySelector("[data-width]")?.value) || 1,
+        height: parseFloat(scope.querySelector("[data-height]")?.value) || 1,
+        material: scope.querySelector("[data-material]")?.value || "tarpaulin-solvent"
+      };
+    }
+
+    function addCurrentItem(source) {
+      const form = readCurrentForm(source);
+      items.push(createItem(form.description, form.width, form.height, form.material));
+      render();
+    }
+
+    function addOrUpdateDesignFee(source) {
+      const scope = source.closest(".view") || document;
+      const input = scope.querySelector("[data-design-fee]");
+      const amount = parseFloat(input?.value) || 0;
+      items = items.filter((item) => item.material !== "design-fees");
+
+      if (amount > 0) {
+        items.push(createItem("Design Fee", 1, 1, "design-fees", amount));
+      }
+
+      render();
+    }
+
+    function renderRows(target, allowDelete) {
+      target.innerHTML = "";
+      items.forEach((item) => {
+        const row = document.createElement("tr");
+        const cells = [
+          `${item.description}<span class="material-meta">${materialNames[item.material]}</span>`,
+          item.size,
+          `${item.quantity.toFixed(ledMaterials.has(item.material) ? 0 : 2)} ${item.unit}`,
+          money(item.unitPrice),
+          `<strong>${money(item.subtotal)}</strong>`
+        ];
+
+        cells.forEach((html) => {
+          const cell = document.createElement("td");
+          cell.innerHTML = html;
+          row.appendChild(cell);
+        });
+
+        if (allowDelete) {
+          const action = document.createElement("td");
+          const button = document.createElement("button");
+          button.className = "delete-row";
+          button.type = "button";
+          button.textContent = "X";
+          button.setAttribute("aria-label", `Remove ${item.description}`);
+          button.addEventListener("click", () => {
+            items = items.filter((candidate) => candidate.id !== item.id);
+            render();
+          });
+          action.appendChild(button);
+          row.appendChild(action);
         }
-        
-        // 页面加载完成时初始化
-        document.addEventListener('DOMContentLoaded', init);
-        
-        // 导出函数供按钮使用
-        window.deleteItem = deleteItem;
-    </script>
-    <!-- KH AI Assistant Floating Chat -->
 
-<!-- Chat Button -->
-<div id="kh-ai-button" onclick="toggleKHChat()">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg" alt="KH AI Assistant">
-</div>
+        target.appendChild(row);
+      });
+    }
 
-<!-- Popup -->
-<div id="kh-ai-popup">
-  <div class="kh-ai-close" onclick="toggleKHChat()">✕</div>
-  <h3>KH AI Assistant</h3>
-  <p>Need quotation for banner, bunting or LED signage?
-  Our AI assistant can estimate pricing instantly.</p>
-  <button class="kh-ai-open" onclick="openKHAI()">Ask AI for Quotation</button>
-</div>
+    function renderQuickRemove(target) {
+      target.innerHTML = "";
 
-<script>
-function toggleKHChat() {
-    const popup = document.getElementById('kh-ai-popup');
-    popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
-}
-function openKHAI() {
-    window.open('https://chatgpt.com/g/g-69b66d402d808191b150134427fb1116-kh-ai-assistant-for-quote', '_blank');
-}
-</script>
-<!-- End KH AI Assistant -->
+      if (!items.length) {
+        const empty = document.createElement("div");
+        empty.className = "quick-remove-item";
+        empty.innerHTML = "<div><strong>No items yet</strong><span>Add an item to begin</span></div>";
+        target.appendChild(empty);
+        return;
+      }
 
+      items.forEach((item) => {
+        const row = document.createElement("div");
+        row.className = "quick-remove-item";
+
+        const text = document.createElement("div");
+        const title = document.createElement("strong");
+        title.textContent = item.description;
+        const meta = document.createElement("span");
+        meta.textContent = `${materialNames[item.material]} - ${money(item.subtotal)}`;
+        text.append(title, meta);
+
+        const button = document.createElement("button");
+        button.className = "delete-row";
+        button.type = "button";
+        button.textContent = "X";
+        button.setAttribute("aria-label", `Remove ${item.description}`);
+        button.addEventListener("click", () => {
+          items = items.filter((candidate) => candidate.id !== item.id);
+          render();
+        });
+
+        row.append(text, button);
+        target.appendChild(row);
+      });
+    }
+
+    function renderPaperItems(target) {
+      target.innerHTML = "";
+
+      if (!items.length) {
+        const empty = document.createElement("article");
+        empty.className = "print-item";
+        empty.innerHTML = '<div class="print-item-main"><strong>No quotation items yet</strong><span>Add products or design fees to prepare the quotation.</span></div>';
+        target.appendChild(empty);
+        return;
+      }
+
+      items.forEach((item) => {
+        const row = document.createElement("article");
+        row.className = "print-item";
+
+        const main = document.createElement("div");
+        main.className = "print-item-main";
+        const title = document.createElement("strong");
+        title.textContent = item.description;
+        const material = document.createElement("span");
+        material.textContent = materialNames[item.material];
+        main.append(title, material);
+
+        const total = document.createElement("div");
+        total.className = "print-item-total";
+        total.textContent = money(item.subtotal);
+
+        const meta = document.createElement("div");
+        meta.className = "print-item-meta";
+        meta.innerHTML = `
+          <span><b>Size / Details</b>${item.size}</span>
+          <span><b>Quantity</b>${item.quantity.toFixed(ledMaterials.has(item.material) ? 0 : 2)} ${item.unit}</span>
+          <span><b>Unit Price</b>${money(item.unitPrice)}</span>
+        `;
+
+        row.append(main, total, meta);
+        target.appendChild(row);
+      });
+    }
+
+    function render() {
+      const total = items.reduce((sum, item) => sum + item.subtotal, 0);
+      document.querySelectorAll("[data-quote-rows]").forEach((target) => renderRows(target, true));
+      document.querySelectorAll("[data-paper-rows]").forEach((target) => renderRows(target, false));
+      document.querySelectorAll("[data-quick-remove-list]").forEach(renderQuickRemove);
+      document.querySelectorAll("[data-price-field]").forEach((input) => {
+        input.value = (prices[activeTier][input.dataset.priceField] || 0).toFixed(2);
+      });
+      const designFee = items.find((item) => item.material === "design-fees");
+      document.querySelectorAll("[data-design-fee]").forEach((input) => {
+        input.value = ((designFee?.subtotal ?? prices[activeTier]["design-fees"]) || 0).toFixed(2);
+      });
+      document.querySelectorAll("[data-subtotal], [data-grand-total]").forEach((target) => {
+        target.textContent = money(total);
+      });
+      document.querySelectorAll("[data-item-count]").forEach((target) => {
+        target.textContent = `${items.length} ${items.length === 1 ? "item" : "items"}`;
+      });
+      document.querySelectorAll("[data-tier-label]").forEach((target) => {
+        target.textContent = tierLabels[activeTier];
+      });
+      document.querySelectorAll("[data-tier-note]").forEach((target) => {
+        target.textContent = tierNotes[activeTier];
+      });
+      const dashTier = document.querySelector("#dash-tier");
+      if (dashTier) {
+        dashTier.classList.toggle("vip", activeTier === "vip");
+        dashTier.innerHTML = activeTier === "vip"
+          ? '<span class="tier-crown"></span><span>VIP</span>'
+          : tierLabels[activeTier];
+      }
+      document.querySelectorAll(".segment").forEach((segment) => {
+        segment.title = segment.dataset.tier === "vip" ? tierNotes.vip : "";
+      });
+    }
+
+    document.querySelectorAll(".tab").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        activateView(tab.dataset.view);
+      });
+    });
+
+    function activateView(viewName) {
+      document.querySelectorAll(".tab").forEach((item) => {
+        item.classList.toggle("active", item.dataset.view === viewName);
+      });
+      document.querySelectorAll(".view").forEach((view) => view.classList.remove("active"));
+      document.querySelector(`#view-${viewName}`).classList.add("active");
+    }
+
+    document.querySelectorAll("[data-tier-control]").forEach((control) => {
+      control.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-tier]");
+        if (!button) return;
+        activeTier = button.dataset.tier;
+        document.querySelectorAll("[data-tier]").forEach((item) => {
+          item.classList.toggle("active", item.dataset.tier === activeTier);
+        });
+        items = items.map((item) => createItem(item.description, item.width, item.height, item.material));
+        render();
+      });
+    });
+
+    document.querySelectorAll("[data-add-current]").forEach((button) => {
+      button.addEventListener("click", () => addCurrentItem(button));
+    });
+
+    document.querySelectorAll("[data-add-design-fee]").forEach((button) => {
+      button.addEventListener("click", () => addOrUpdateDesignFee(button));
+    });
+
+    document.querySelectorAll("[data-price-field]").forEach((input) => {
+      input.addEventListener("change", () => {
+        const value = parseFloat(input.value);
+        prices[activeTier][input.dataset.priceField] = Number.isFinite(value) ? value : 0;
+        savePrices();
+        recalculateItems();
+        render();
+      });
+    });
+
+    document.querySelectorAll("[data-reset-prices]").forEach((button) => {
+      button.addEventListener("click", () => {
+        prices = clonePrices(defaultPrices);
+        localStorage.removeItem(priceStorageKey);
+        recalculateItems();
+        render();
+      });
+    });
+
+    document.querySelector("[data-add-sample]").addEventListener("click", () => {
+      items.push(createItem("Sample signage item", 6, 2.5, "tarpaulin-uv"));
+      render();
+    });
+
+    const priceModal = document.querySelector("[data-price-modal]");
+
+    document.querySelector("[data-open-prices]").addEventListener("click", () => {
+      priceModal.classList.add("open");
+      priceModal.setAttribute("aria-hidden", "false");
+    });
+
+    document.querySelector("[data-close-prices]").addEventListener("click", () => {
+      priceModal.classList.remove("open");
+      priceModal.setAttribute("aria-hidden", "true");
+    });
+
+    priceModal.addEventListener("click", (event) => {
+      if (event.target === priceModal) {
+        priceModal.classList.remove("open");
+        priceModal.setAttribute("aria-hidden", "true");
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        priceModal.classList.remove("open");
+        priceModal.setAttribute("aria-hidden", "true");
+      }
+    });
+
+    function wrapCanvasText(context, text, maxWidth) {
+      const words = String(text).split(" ");
+      const lines = [];
+      let line = "";
+
+      words.forEach((word) => {
+        const test = line ? `${line} ${word}` : word;
+        if (context.measureText(test).width > maxWidth && line) {
+          lines.push(line);
+          line = word;
+        } else {
+          line = test;
+        }
+      });
+
+      if (line) lines.push(line);
+      return lines;
+    }
+
+    function drawText(context, text, x, y, options = {}) {
+      const {
+        font = "16px Arial",
+        color = "#10201d",
+        maxWidth,
+        lineHeight = 22,
+        align = "left",
+        weight
+      } = options;
+      context.font = weight ? `${weight} ${font}` : font;
+      context.fillStyle = color;
+      context.textAlign = align;
+      context.textBaseline = "top";
+
+      const lines = maxWidth ? wrapCanvasText(context, text, maxWidth) : [text];
+      lines.forEach((line, index) => {
+        context.fillText(line, x, y + index * lineHeight);
+      });
+      return lines.length * lineHeight;
+    }
+
+    function downloadCanvas(canvas, filename) {
+      const link = document.createElement("a");
+      link.href = canvas.toDataURL("image/png");
+      link.download = filename;
+      link.click();
+    }
+
+    function loadImage(url) {
+      return new Promise((resolve) => {
+        const image = new Image();
+        image.crossOrigin = "anonymous";
+        image.onload = () => resolve(image);
+        image.onerror = () => resolve(null);
+        image.src = url;
+      });
+    }
+
+    async function downloadQuotationScreenshot() {
+      activateView("preview");
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+
+      const scale = 2;
+      const width = 1000;
+      const margin = 46;
+      const contentWidth = width - margin * 2;
+      const rowHeights = items.map((item) => {
+        const descriptionLines = Math.ceil(String(item.description).length / 38);
+        return Math.max(62, 42 + descriptionLines * 18);
+      });
+      const tableHeight = 44 + rowHeights.reduce((sum, height) => sum + height, 0);
+      const height = Math.max(880, 330 + tableHeight + 210);
+      const canvas = document.createElement("canvas");
+      canvas.width = width * scale;
+      canvas.height = height * scale;
+      const context = canvas.getContext("2d");
+      context.scale(scale, scale);
+
+      context.fillStyle = "white";
+      context.fillRect(0, 0, width, height);
+
+      const logo = await loadImage(brandLogoUrl);
+      if (logo) {
+        context.save();
+        context.beginPath();
+        context.roundRect(margin, 58, 60, 60, 8);
+        context.clip();
+        context.drawImage(logo, margin, 58, 60, 60);
+        context.restore();
+      } else {
+        context.fillStyle = "#148f7c";
+        context.beginPath();
+        context.roundRect(margin, 58, 60, 60, 8);
+        context.fill();
+        drawText(context, "KH", margin + 30, 78, {
+          font: "17px Arial",
+          color: "#06100e",
+          weight: "800",
+          align: "center"
+        });
+      }
+
+      drawText(context, "KH Sign Media", margin + 78, 63, {
+        font: "28px Arial",
+        weight: "800",
+        color: "#10201d"
+      });
+      drawText(context, "Signage, printing and LED quotation", margin + 78, 100, {
+        font: "15px Arial",
+        color: "#64736f"
+      });
+      drawText(context, "Quotation", width - margin, 56, {
+        font: "30px Arial",
+        weight: "800",
+        color: "#10201d",
+        align: "right"
+      });
+      drawText(context, "No. KH-260527", width - margin, 94, {
+        font: "14px Arial",
+        color: "#64736f",
+        align: "right"
+      });
+      drawText(context, "27 May 2026", width - margin, 118, {
+        font: "14px Arial",
+        color: "#64736f",
+        align: "right"
+      });
+
+      context.strokeStyle = "#148f7c";
+      context.lineWidth = 4;
+      context.beginPath();
+      context.moveTo(margin, 160);
+      context.lineTo(width - margin, 160);
+      context.stroke();
+
+      function drawBillBox(x, y, boxWidth, title, lines) {
+        context.strokeStyle = "#d8dfdc";
+        context.lineWidth = 1.5;
+        context.beginPath();
+        context.roundRect(x, y, boxWidth, 112, 8);
+        context.stroke();
+        drawText(context, title, x + 18, y + 20, {
+          font: "14px Arial",
+          weight: "800",
+          color: "#148f7c"
+        });
+        drawText(context, lines.join("\n"), x + 18, y + 52, {
+          font: "18px Arial",
+          color: "#10201d",
+          lineHeight: 23
+        });
+      }
+
+      const boxGap = 28;
+      const boxWidth = (contentWidth - boxGap) / 2;
+      drawBillBox(margin, 190, boxWidth, "BILL TO", ["Walk-in Customer", `${tierLabels[activeTier]} pricing`]);
+      drawBillBox(margin + boxWidth + boxGap, 190, boxWidth, "PREPARED BY", ["KH Sign Media Team", "Valid for 30 days"]);
+
+      let y = 330;
+      const columns = {
+        desc: margin + 14,
+        size: margin + 252,
+        qty: margin + 495,
+        unit: margin + 640,
+        total: width - margin - 14
+      };
+
+      context.fillStyle = "#13231f";
+      context.fillRect(margin, y, contentWidth, 44);
+      drawText(context, "DESCRIPTION", columns.desc, y + 14, { font: "13px Arial", weight: "800", color: "#b9cbc7" });
+      drawText(context, "SIZE", columns.size, y + 14, { font: "13px Arial", weight: "800", color: "#b9cbc7" });
+      drawText(context, "QTY", columns.qty, y + 14, { font: "13px Arial", weight: "800", color: "#b9cbc7" });
+      drawText(context, "UNIT", columns.unit, y + 14, { font: "13px Arial", weight: "800", color: "#b9cbc7" });
+      drawText(context, "TOTAL", columns.total, y + 14, { font: "13px Arial", weight: "800", color: "#b9cbc7", align: "right" });
+      y += 44;
+
+      items.forEach((item, index) => {
+        const rowHeight = rowHeights[index];
+        const top = y + 18;
+        drawText(context, item.description, columns.desc, top, {
+          font: "16px Arial",
+          color: "#10201d",
+          maxWidth: 210,
+          lineHeight: 20
+        });
+        drawText(context, materialNames[item.material], columns.desc, top + 25, {
+          font: "13px Arial",
+          color: "#64736f",
+          maxWidth: 210,
+          lineHeight: 17
+        });
+        drawText(context, item.size, columns.size, top, {
+          font: "16px Arial",
+          color: "#10201d",
+          maxWidth: 180,
+          lineHeight: 20
+        });
+        drawText(context, `${item.quantity.toFixed(ledMaterials.has(item.material) ? 0 : 2)} ${item.unit}`, columns.qty, top, {
+          font: "16px Arial",
+          color: "#10201d"
+        });
+        drawText(context, money(item.unitPrice), columns.unit, top, {
+          font: "16px Arial",
+          color: "#10201d"
+        });
+        drawText(context, money(item.subtotal), columns.total, top, {
+          font: "16px Arial",
+          weight: "800",
+          color: "#10201d",
+          align: "right"
+        });
+
+        y += rowHeight;
+        context.strokeStyle = "#d8dfdc";
+        context.lineWidth = 1;
+        context.beginPath();
+        context.moveTo(margin, y);
+        context.lineTo(width - margin, y);
+        context.stroke();
+      });
+
+      const total = items.reduce((sum, item) => sum + item.subtotal, 0);
+      const totalX = width - margin - 390;
+      y += 70;
+      context.strokeStyle = "#10201d";
+      context.lineWidth = 1.5;
+      context.beginPath();
+      context.moveTo(totalX, y);
+      context.lineTo(width - margin, y);
+      context.stroke();
+      y += 36;
+      drawText(context, "Subtotal", totalX, y, { font: "16px Arial", color: "#10201d" });
+      drawText(context, money(total), width - margin, y, {
+        font: "16px Arial",
+        weight: "800",
+        color: "#10201d",
+        align: "right"
+      });
+      y += 64;
+      drawText(context, "Total", totalX, y, {
+        font: "36px Arial",
+        weight: "900",
+        color: "#10201d"
+      });
+      drawText(context, money(total), width - margin, y, {
+        font: "36px Arial",
+        weight: "900",
+        color: "#10201d",
+        align: "right"
+      });
+
+      const termsY = height - 130;
+      context.strokeStyle = "#d8dfdc";
+      context.lineWidth = 1;
+      context.beginPath();
+      context.moveTo(margin, termsY);
+      context.lineTo(width - margin, termsY);
+      context.stroke();
+      drawText(context, "C.O.D terms. Price is valid for 30 days unless material cost changes. Production starts after confirmation and artwork approval.", margin, termsY + 28, {
+        font: "14px Arial",
+        color: "#64736f",
+        maxWidth: contentWidth,
+        lineHeight: 20
+      });
+
+      downloadCanvas(canvas, "KH-quotation-preview-image.png");
+    }
+
+    document.querySelector("[data-screenshot]").addEventListener("click", () => {
+      downloadQuotationScreenshot().catch(() => {
+        alert("Could not capture the quotation preview in this browser. Please use your browser screenshot tool on the Quotation tab.");
+      });
+    });
+
+    render();
+  </script>
 </body>
 </html>
