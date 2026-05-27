@@ -786,6 +786,102 @@
       line-height: 1.55;
     }
 
+    .quote-note {
+      display: none;
+      margin-top: 20px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfb;
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .quote-note.active {
+      display: block;
+    }
+
+    .quote-note strong,
+    .attachment-card strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--brand);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .attachment-grid {
+      display: none;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .attachment-grid.active {
+      display: grid;
+    }
+
+    .attachment-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfcfb;
+    }
+
+    .attachment-card img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      background: #eef2f0;
+    }
+
+    .upload-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .item-attachment-row td {
+      padding-top: 0;
+      background: #fbfcfb;
+    }
+
+    .item-attachments {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 180px));
+      gap: 12px;
+      padding: 8px 0 4px;
+    }
+
+    .item-attachment {
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 8px;
+      background: white;
+    }
+
+    .item-attachment strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--brand);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .item-attachment img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+
     .status-row {
       display: flex;
       align-items: center;
@@ -962,7 +1058,9 @@
       .two,
       .wizard-layout,
       .large-form,
-      .bill-row {
+      .bill-row,
+      .upload-grid,
+      .attachment-grid {
         grid-template-columns: 1fr;
       }
 
@@ -1145,6 +1243,17 @@
                 </select>
               </div>
               <button class="btn primary" type="button" data-add-current><span class="icon add"></span>Add to quote</button>
+              <div class="upload-grid">
+                <div class="field">
+                  <label>Sample Work</label>
+                  <input data-image-input="sample" type="file" accept="image/*">
+                </div>
+                <div class="field">
+                  <label>Reference Image</label>
+                  <input data-image-input="reference" type="file" accept="image/*">
+                </div>
+              </div>
+              <div class="drawer-note">Uploaded images attach to the next item you add. They are temporary and not stored.</div>
               <div class="design-fee-box">
                 <div class="field">
                   <label for="dash-design-fee">Design Fee</label>
@@ -1305,6 +1414,24 @@
                   <button class="btn" type="button">Back</button>
                   <button class="btn primary" type="button" data-add-current><span class="icon add"></span>Add item</button>
                 </div>
+                <div class="upload-grid" style="margin-top: 15px;">
+                  <div class="field">
+                    <label>Sample Work</label>
+                    <input data-image-input="sample" type="file" accept="image/*">
+                  </div>
+                  <div class="field">
+                    <label>Reference Image</label>
+                    <input data-image-input="reference" type="file" accept="image/*">
+                  </div>
+                </div>
+                <div class="drawer-note" style="margin-top: 10px;">Uploaded images attach to the next item you add. They are temporary and not stored.</div>
+                <div class="design-fee-box" style="margin-top: 15px;">
+                  <div class="field">
+                    <label for="wiz-design-fee">Design Fee</label>
+                    <input id="wiz-design-fee" data-design-fee type="number" min="0" step="5" value="80">
+                  </div>
+                  <button class="btn" type="button" data-add-design-fee>Add / update design fee</button>
+                </div>
               </div>
             </section>
 
@@ -1378,6 +1505,17 @@
                 </select>
               </div>
               <button class="btn primary" type="button" data-add-current><span class="icon add"></span>Add to document</button>
+              <div class="upload-grid">
+                <div class="field">
+                  <label for="sample-work-input">Sample Work</label>
+                  <input id="sample-work-input" data-image-input="sample" type="file" accept="image/*">
+                </div>
+                <div class="field">
+                  <label for="reference-image-input">Reference Image</label>
+                  <input id="reference-image-input" data-image-input="reference" type="file" accept="image/*">
+                </div>
+              </div>
+              <div class="drawer-note">Uploaded images attach to the next item you add. They are temporary and not stored.</div>
               <div class="design-fee-box">
                 <div class="field">
                   <label for="prev-design-fee">Design Fee</label>
@@ -1391,6 +1529,20 @@
                   <span data-item-count>0 items</span>
                 </div>
                 <div data-quick-remove-list></div>
+              </div>
+              <div class="field">
+                <label for="rows-per-image">Rows Per Saved PNG Image</label>
+                <select id="rows-per-image" data-rows-per-image>
+                  <option value="12">12 rows per image</option>
+                  <option value="20" selected>20 rows per image</option>
+                  <option value="30">30 rows per image</option>
+                  <option value="all">All rows in one image</option>
+                </select>
+              </div>
+              <div class="drawer-note">This controls how many quote rows are included in each exported .png image.</div>
+              <div class="field">
+                <label for="quote-note-input">Quote Note / Instruction</label>
+                <textarea id="quote-note-input" data-quote-note-input rows="4" placeholder="e.g., Please confirm exact installation location before production."></textarea>
               </div>
               <div class="status-row"><span>Quote No.</span><strong>KH-260527</strong></div>
               <div class="status-row"><span>Validity</span><strong>30 days</strong></div>
@@ -1439,6 +1591,11 @@
               </thead>
               <tbody data-paper-rows></tbody>
             </table>
+
+            <div class="quote-note" data-quote-note-output>
+              <strong>Note / Instruction</strong>
+              <div data-quote-note-text></div>
+            </div>
 
             <div class="paper-total">
               <div class="total-line" style="color: var(--ink); border-color: var(--line);">
@@ -1573,6 +1730,11 @@
     const ledMaterials = new Set(["led-3d", "led-3d-uv"]);
 
     let activeTier = "standard";
+    let quoteNote = "";
+    const pendingImages = {
+      sample: null,
+      reference: null
+    };
     let items = [
       createItem("Opening banner", 8, 3, "tarpaulin-solvent"),
       createItem("3D LED logo letters", 15, 18, "led-3d")
@@ -1582,7 +1744,18 @@
       return `RM ${value.toFixed(2)}`;
     }
 
-    function createItem(description, width, height, material, customPrice) {
+    function cloneImages(images) {
+      return {
+        sample: images?.sample || null,
+        reference: images?.reference || null
+      };
+    }
+
+    function hasItemImages(item) {
+      return Boolean(item.images?.sample || item.images?.reference);
+    }
+
+    function createItem(description, width, height, material, customPrice, images) {
       const unitPrice = customPrice ?? prices[activeTier][material] ?? 0;
       let quantity = width * height;
       let unit = "sqft";
@@ -1614,14 +1787,15 @@
         quantity,
         unit,
         unitPrice,
-        subtotal
+        subtotal,
+        images: cloneImages(images)
       };
     }
 
     function recalculateItems() {
       items = items.map((item) => {
         if (item.material === "design-fees") return item;
-        return createItem(item.description, item.width, item.height, item.material);
+        return createItem(item.description, item.width, item.height, item.material, undefined, item.images);
       });
     }
 
@@ -1637,7 +1811,12 @@
 
     function addCurrentItem(source) {
       const form = readCurrentForm(source);
-      items.push(createItem(form.description, form.width, form.height, form.material));
+      items.push(createItem(form.description, form.width, form.height, form.material, undefined, pendingImages));
+      pendingImages.sample = null;
+      pendingImages.reference = null;
+      document.querySelectorAll("[data-image-input]").forEach((input) => {
+        input.value = "";
+      });
       render();
     }
 
@@ -1688,6 +1867,35 @@
         }
 
         target.appendChild(row);
+
+        if (!allowDelete && hasItemImages(item)) {
+          const attachmentRow = document.createElement("tr");
+          attachmentRow.className = "item-attachment-row";
+          const cell = document.createElement("td");
+          cell.colSpan = 5;
+          const attachments = document.createElement("div");
+          attachments.className = "item-attachments";
+
+          [
+            ["Sample Work", item.images.sample],
+            ["Reference Image", item.images.reference]
+          ].forEach(([label, src]) => {
+            if (!src) return;
+            const card = document.createElement("div");
+            card.className = "item-attachment";
+            const title = document.createElement("strong");
+            title.textContent = label;
+            const image = document.createElement("img");
+            image.src = src;
+            image.alt = label;
+            card.append(title, image);
+            attachments.appendChild(card);
+          });
+
+          cell.appendChild(attachments);
+          attachmentRow.appendChild(cell);
+          target.appendChild(attachmentRow);
+        }
       });
     }
 
@@ -1792,6 +2000,12 @@
       document.querySelectorAll("[data-tier-note]").forEach((target) => {
         target.textContent = tierNotes[activeTier];
       });
+      document.querySelectorAll("[data-quote-note-output]").forEach((target) => {
+        target.classList.toggle("active", Boolean(quoteNote.trim()));
+      });
+      document.querySelectorAll("[data-quote-note-text]").forEach((target) => {
+        target.textContent = quoteNote;
+      });
       const dashTier = document.querySelector("#dash-tier");
       if (dashTier) {
         dashTier.classList.toggle("vip", activeTier === "vip");
@@ -1826,7 +2040,10 @@
         document.querySelectorAll("[data-tier]").forEach((item) => {
           item.classList.toggle("active", item.dataset.tier === activeTier);
         });
-        items = items.map((item) => createItem(item.description, item.width, item.height, item.material));
+        items = items.map((item) => {
+          if (item.material === "design-fees") return item;
+          return createItem(item.description, item.width, item.height, item.material, undefined, item.images);
+        });
         render();
       });
     });
@@ -1837,6 +2054,31 @@
 
     document.querySelectorAll("[data-add-design-fee]").forEach((button) => {
       button.addEventListener("click", () => addOrUpdateDesignFee(button));
+    });
+
+    document.querySelectorAll("[data-quote-note-input]").forEach((input) => {
+      input.addEventListener("input", () => {
+        quoteNote = input.value;
+        render();
+      });
+    });
+
+    document.querySelectorAll("[data-image-input]").forEach((input) => {
+      input.addEventListener("change", () => {
+        const file = input.files?.[0];
+        if (!file) {
+          pendingImages[input.dataset.imageInput] = null;
+          render();
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = () => {
+          pendingImages[input.dataset.imageInput] = reader.result;
+          render();
+        };
+        reader.readAsDataURL(file);
+      });
     });
 
     document.querySelectorAll("[data-price-field]").forEach((input) => {
@@ -1859,7 +2101,12 @@
     });
 
     document.querySelector("[data-add-sample]").addEventListener("click", () => {
-      items.push(createItem("Sample signage item", 6, 2.5, "tarpaulin-uv"));
+      items.push(createItem("Sample signage item", 6, 2.5, "tarpaulin-uv", undefined, pendingImages));
+      pendingImages.sample = null;
+      pendingImages.reference = null;
+      document.querySelectorAll("[data-image-input]").forEach((input) => {
+        input.value = "";
+      });
       render();
     });
 
@@ -1946,6 +2193,11 @@
       });
     }
 
+    function getRowHeightForCanvas(item) {
+      const descriptionLines = Math.max(1, Math.ceil(String(item.description).length / 38));
+      return Math.max(62, 42 + descriptionLines * 18) + (hasItemImages(item) ? 170 : 0);
+    }
+
     async function downloadQuotationScreenshot() {
       activateView("preview");
       await new Promise((resolve) => requestAnimationFrame(resolve));
@@ -1954,206 +2206,180 @@
       const width = 1000;
       const margin = 46;
       const contentWidth = width - margin * 2;
-      const rowHeights = items.map((item) => {
-        const descriptionLines = Math.ceil(String(item.description).length / 38);
-        return Math.max(62, 42 + descriptionLines * 18);
-      });
-      const tableHeight = 44 + rowHeights.reduce((sum, height) => sum + height, 0);
-      const height = Math.max(880, 330 + tableHeight + 210);
-      const canvas = document.createElement("canvas");
-      canvas.width = width * scale;
-      canvas.height = height * scale;
-      const context = canvas.getContext("2d");
-      context.scale(scale, scale);
-
-      context.fillStyle = "white";
-      context.fillRect(0, 0, width, height);
-
       const logo = await loadImage(brandLogoUrl);
-      if (logo) {
-        context.save();
-        context.beginPath();
-        context.roundRect(margin, 58, 60, 60, 8);
-        context.clip();
-        context.drawImage(logo, margin, 58, 60, 60);
-        context.restore();
-      } else {
-        context.fillStyle = "#148f7c";
-        context.beginPath();
-        context.roundRect(margin, 58, 60, 60, 8);
-        context.fill();
-        drawText(context, "KH", margin + 30, 78, {
-          font: "17px Arial",
-          color: "#06100e",
-          weight: "800",
-          align: "center"
-        });
+      const rowsControl = document.querySelector("[data-rows-per-image]")?.value || "20";
+      const rowsPerImage = rowsControl === "all" ? Math.max(items.length, 1) : parseInt(rowsControl, 10);
+      const pages = [];
+      for (let i = 0; i < items.length; i += rowsPerImage) {
+        pages.push(items.slice(i, i + rowsPerImage));
       }
+      if (!pages.length) pages.push([]);
 
-      drawText(context, "KH Sign Media", margin + 78, 63, {
-        font: "28px Arial",
-        weight: "800",
-        color: "#10201d"
-      });
-      drawText(context, "Signage, printing and LED quotation", margin + 78, 100, {
-        font: "15px Arial",
-        color: "#64736f"
-      });
-      drawText(context, "Quotation", width - margin, 56, {
-        font: "30px Arial",
-        weight: "800",
-        color: "#10201d",
-        align: "right"
-      });
-      drawText(context, "No. KH-260527", width - margin, 94, {
-        font: "14px Arial",
-        color: "#64736f",
-        align: "right"
-      });
-      drawText(context, "27 May 2026", width - margin, 118, {
-        font: "14px Arial",
-        color: "#64736f",
-        align: "right"
-      });
+      const allTotal = items.reduce((sum, item) => sum + item.subtotal, 0);
 
-      context.strokeStyle = "#148f7c";
-      context.lineWidth = 4;
-      context.beginPath();
-      context.moveTo(margin, 160);
-      context.lineTo(width - margin, 160);
-      context.stroke();
+      async function drawPage(pageItems, pageIndex) {
+        const isLastPage = pageIndex === pages.length - 1;
+        const rowHeights = pageItems.map(getRowHeightForCanvas);
+        const tableHeight = 44 + rowHeights.reduce((sum, height) => sum + height, 0);
+        const noteHeight = isLastPage && quoteNote.trim() ? 100 : 0;
+        const totalHeight = isLastPage ? 180 : 40;
+        const height = Math.max(880, 330 + tableHeight + noteHeight + totalHeight + 120);
+        const canvas = document.createElement("canvas");
+        canvas.width = width * scale;
+        canvas.height = height * scale;
+        const context = canvas.getContext("2d");
+        context.scale(scale, scale);
+        context.fillStyle = "white";
+        context.fillRect(0, 0, width, height);
 
-      function drawBillBox(x, y, boxWidth, title, lines) {
-        context.strokeStyle = "#d8dfdc";
+        if (logo) {
+          context.save();
+          context.beginPath();
+          context.roundRect(margin, 58, 60, 60, 8);
+          context.clip();
+          context.drawImage(logo, margin, 58, 60, 60);
+          context.restore();
+        } else {
+          context.fillStyle = "#148f7c";
+          context.beginPath();
+          context.roundRect(margin, 58, 60, 60, 8);
+          context.fill();
+          drawText(context, "KH", margin + 30, 78, { font: "17px Arial", color: "#06100e", weight: "800", align: "center" });
+        }
+
+        drawText(context, "KH Sign Media", margin + 78, 63, { font: "28px Arial", weight: "800", color: "#10201d" });
+        drawText(context, "Signage, printing and LED quotation", margin + 78, 100, { font: "15px Arial", color: "#64736f" });
+        drawText(context, "Quotation", width - margin, 56, { font: "30px Arial", weight: "800", color: "#10201d", align: "right" });
+        drawText(context, `No. KH-260527${pages.length > 1 ? ` / Page ${pageIndex + 1} of ${pages.length}` : ""}`, width - margin, 94, { font: "14px Arial", color: "#64736f", align: "right" });
+        drawText(context, "27 May 2026", width - margin, 118, { font: "14px Arial", color: "#64736f", align: "right" });
+        context.strokeStyle = "#148f7c";
+        context.lineWidth = 4;
+        context.beginPath();
+        context.moveTo(margin, 160);
+        context.lineTo(width - margin, 160);
+        context.stroke();
+
+        function drawBillBox(x, y, boxWidth, title, lines) {
+          context.strokeStyle = "#d8dfdc";
+          context.lineWidth = 1.5;
+          context.beginPath();
+          context.roundRect(x, y, boxWidth, 112, 8);
+          context.stroke();
+          drawText(context, title, x + 18, y + 20, { font: "14px Arial", weight: "800", color: "#148f7c" });
+          drawText(context, lines.join("\n"), x + 18, y + 52, { font: "18px Arial", color: "#10201d", lineHeight: 23 });
+        }
+
+        const boxGap = 28;
+        const boxWidth = (contentWidth - boxGap) / 2;
+        drawBillBox(margin, 190, boxWidth, "BILL TO", ["Walk-in Customer", `${tierLabels[activeTier]} pricing`]);
+        drawBillBox(margin + boxWidth + boxGap, 190, boxWidth, "PREPARED BY", ["KH Sign Media Team", "Valid for 30 days"]);
+
+        let y = 330;
+        const columns = { desc: margin + 14, size: margin + 252, qty: margin + 495, unit: margin + 640, total: width - margin - 14 };
+        context.fillStyle = "#13231f";
+        context.fillRect(margin, y, contentWidth, 44);
+        drawText(context, "DESCRIPTION", columns.desc, y + 14, { font: "13px Arial", weight: "800", color: "#b9cbc7" });
+        drawText(context, "SIZE", columns.size, y + 14, { font: "13px Arial", weight: "800", color: "#b9cbc7" });
+        drawText(context, "QTY", columns.qty, y + 14, { font: "13px Arial", weight: "800", color: "#b9cbc7" });
+        drawText(context, "UNIT", columns.unit, y + 14, { font: "13px Arial", weight: "800", color: "#b9cbc7" });
+        drawText(context, "TOTAL", columns.total, y + 14, { font: "13px Arial", weight: "800", color: "#b9cbc7", align: "right" });
+        y += 44;
+
+        for (let index = 0; index < pageItems.length; index += 1) {
+          const item = pageItems[index];
+          const rowHeight = rowHeights[index];
+          const top = y + 18;
+          drawText(context, item.description, columns.desc, top, { font: "16px Arial", color: "#10201d", maxWidth: 210, lineHeight: 20 });
+          drawText(context, materialNames[item.material], columns.desc, top + 25, { font: "13px Arial", color: "#64736f", maxWidth: 210, lineHeight: 17 });
+          drawText(context, item.size, columns.size, top, { font: "16px Arial", color: "#10201d", maxWidth: 180, lineHeight: 20 });
+          drawText(context, `${item.quantity.toFixed(ledMaterials.has(item.material) ? 0 : 2)} ${item.unit}`, columns.qty, top, { font: "16px Arial", color: "#10201d" });
+          drawText(context, money(item.unitPrice), columns.unit, top, { font: "16px Arial", color: "#10201d" });
+          drawText(context, money(item.subtotal), columns.total, top, { font: "16px Arial", weight: "800", color: "#10201d", align: "right" });
+
+          if (hasItemImages(item)) {
+            const entries = [["Sample Work", item.images.sample], ["Reference Image", item.images.reference]].filter((entry) => entry[1]);
+            const loaded = await Promise.all(entries.map(([label, src]) => loadImage(src).then((image) => [label, image])));
+            loaded.forEach(([label, image], imageIndex) => {
+              const cardX = columns.desc + imageIndex * 188;
+              const cardY = y + 68;
+              context.strokeStyle = "#d8dfdc";
+              context.lineWidth = 1;
+              context.beginPath();
+              context.roundRect(cardX, cardY, 170, 126, 7);
+              context.stroke();
+              drawText(context, label.toUpperCase(), cardX + 10, cardY + 9, { font: "11px Arial", weight: "800", color: "#148f7c" });
+              if (image) {
+                context.save();
+                context.beginPath();
+                context.roundRect(cardX + 10, cardY + 30, 150, 84, 5);
+                context.clip();
+                const ratio = Math.max(150 / image.width, 84 / image.height);
+                const drawW = image.width * ratio;
+                const drawH = image.height * ratio;
+                context.drawImage(image, cardX + 10 + (150 - drawW) / 2, cardY + 30 + (84 - drawH) / 2, drawW, drawH);
+                context.restore();
+              }
+            });
+          }
+
+          y += rowHeight;
+          context.strokeStyle = "#d8dfdc";
+          context.lineWidth = 1;
+          context.beginPath();
+          context.moveTo(margin, y);
+          context.lineTo(width - margin, y);
+          context.stroke();
+        }
+
+        if (!isLastPage) {
+          y += 28;
+          drawText(context, "Continued on next image...", width - margin, y, { font: "14px Arial", color: "#64736f", align: "right" });
+          return canvas;
+        }
+
+        if (quoteNote.trim()) {
+          y += 24;
+          context.strokeStyle = "#d8dfdc";
+          context.lineWidth = 1.5;
+          context.beginPath();
+          context.roundRect(margin, y, contentWidth, 74, 8);
+          context.stroke();
+          drawText(context, "NOTE / INSTRUCTION", margin + 16, y + 14, { font: "13px Arial", weight: "800", color: "#148f7c" });
+          drawText(context, quoteNote, margin + 16, y + 38, { font: "14px Arial", color: "#10201d", maxWidth: contentWidth - 32, lineHeight: 18 });
+          y += 96;
+        }
+
+        const totalX = width - margin - 390;
+        y += 50;
+        context.strokeStyle = "#10201d";
         context.lineWidth = 1.5;
         context.beginPath();
-        context.roundRect(x, y, boxWidth, 112, 8);
+        context.moveTo(totalX, y);
+        context.lineTo(width - margin, y);
         context.stroke();
-        drawText(context, title, x + 18, y + 20, {
-          font: "14px Arial",
-          weight: "800",
-          color: "#148f7c"
-        });
-        drawText(context, lines.join("\n"), x + 18, y + 52, {
-          font: "18px Arial",
-          color: "#10201d",
-          lineHeight: 23
-        });
-      }
+        y += 36;
+        drawText(context, "Subtotal", totalX, y, { font: "16px Arial", color: "#10201d" });
+        drawText(context, money(allTotal), width - margin, y, { font: "16px Arial", weight: "800", color: "#10201d", align: "right" });
+        y += 64;
+        drawText(context, "Total", totalX, y, { font: "36px Arial", weight: "900", color: "#10201d" });
+        drawText(context, money(allTotal), width - margin, y, { font: "36px Arial", weight: "900", color: "#10201d", align: "right" });
 
-      const boxGap = 28;
-      const boxWidth = (contentWidth - boxGap) / 2;
-      drawBillBox(margin, 190, boxWidth, "BILL TO", ["Walk-in Customer", `${tierLabels[activeTier]} pricing`]);
-      drawBillBox(margin + boxWidth + boxGap, 190, boxWidth, "PREPARED BY", ["KH Sign Media Team", "Valid for 30 days"]);
-
-      let y = 330;
-      const columns = {
-        desc: margin + 14,
-        size: margin + 252,
-        qty: margin + 495,
-        unit: margin + 640,
-        total: width - margin - 14
-      };
-
-      context.fillStyle = "#13231f";
-      context.fillRect(margin, y, contentWidth, 44);
-      drawText(context, "DESCRIPTION", columns.desc, y + 14, { font: "13px Arial", weight: "800", color: "#b9cbc7" });
-      drawText(context, "SIZE", columns.size, y + 14, { font: "13px Arial", weight: "800", color: "#b9cbc7" });
-      drawText(context, "QTY", columns.qty, y + 14, { font: "13px Arial", weight: "800", color: "#b9cbc7" });
-      drawText(context, "UNIT", columns.unit, y + 14, { font: "13px Arial", weight: "800", color: "#b9cbc7" });
-      drawText(context, "TOTAL", columns.total, y + 14, { font: "13px Arial", weight: "800", color: "#b9cbc7", align: "right" });
-      y += 44;
-
-      items.forEach((item, index) => {
-        const rowHeight = rowHeights[index];
-        const top = y + 18;
-        drawText(context, item.description, columns.desc, top, {
-          font: "16px Arial",
-          color: "#10201d",
-          maxWidth: 210,
-          lineHeight: 20
-        });
-        drawText(context, materialNames[item.material], columns.desc, top + 25, {
-          font: "13px Arial",
-          color: "#64736f",
-          maxWidth: 210,
-          lineHeight: 17
-        });
-        drawText(context, item.size, columns.size, top, {
-          font: "16px Arial",
-          color: "#10201d",
-          maxWidth: 180,
-          lineHeight: 20
-        });
-        drawText(context, `${item.quantity.toFixed(ledMaterials.has(item.material) ? 0 : 2)} ${item.unit}`, columns.qty, top, {
-          font: "16px Arial",
-          color: "#10201d"
-        });
-        drawText(context, money(item.unitPrice), columns.unit, top, {
-          font: "16px Arial",
-          color: "#10201d"
-        });
-        drawText(context, money(item.subtotal), columns.total, top, {
-          font: "16px Arial",
-          weight: "800",
-          color: "#10201d",
-          align: "right"
-        });
-
-        y += rowHeight;
+        y += 76;
         context.strokeStyle = "#d8dfdc";
         context.lineWidth = 1;
         context.beginPath();
         context.moveTo(margin, y);
         context.lineTo(width - margin, y);
         context.stroke();
-      });
+        drawText(context, "C.O.D terms. Price is valid for 30 days unless material cost changes. Production starts after confirmation and artwork approval.", margin, y + 28, { font: "14px Arial", color: "#64736f", maxWidth: contentWidth, lineHeight: 20 });
+        return canvas;
+      }
 
-      const total = items.reduce((sum, item) => sum + item.subtotal, 0);
-      const totalX = width - margin - 390;
-      y += 70;
-      context.strokeStyle = "#10201d";
-      context.lineWidth = 1.5;
-      context.beginPath();
-      context.moveTo(totalX, y);
-      context.lineTo(width - margin, y);
-      context.stroke();
-      y += 36;
-      drawText(context, "Subtotal", totalX, y, { font: "16px Arial", color: "#10201d" });
-      drawText(context, money(total), width - margin, y, {
-        font: "16px Arial",
-        weight: "800",
-        color: "#10201d",
-        align: "right"
-      });
-      y += 64;
-      drawText(context, "Total", totalX, y, {
-        font: "36px Arial",
-        weight: "900",
-        color: "#10201d"
-      });
-      drawText(context, money(total), width - margin, y, {
-        font: "36px Arial",
-        weight: "900",
-        color: "#10201d",
-        align: "right"
-      });
-
-      const termsY = height - 130;
-      context.strokeStyle = "#d8dfdc";
-      context.lineWidth = 1;
-      context.beginPath();
-      context.moveTo(margin, termsY);
-      context.lineTo(width - margin, termsY);
-      context.stroke();
-      drawText(context, "C.O.D terms. Price is valid for 30 days unless material cost changes. Production starts after confirmation and artwork approval.", margin, termsY + 28, {
-        font: "14px Arial",
-        color: "#64736f",
-        maxWidth: contentWidth,
-        lineHeight: 20
-      });
-
-      downloadCanvas(canvas, "KH-quotation-preview-image.png");
+      for (let pageIndex = 0; pageIndex < pages.length; pageIndex += 1) {
+        const canvas = await drawPage(pages[pageIndex], pageIndex);
+        const suffix = pages.length > 1 ? `-page-${pageIndex + 1}` : "";
+        downloadCanvas(canvas, `KH-quotation-preview-image${suffix}.png`);
+      }
     }
 
     document.querySelector("[data-screenshot]").addEventListener("click", () => {
