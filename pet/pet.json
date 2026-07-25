@@ -1,0 +1,7 @@
+{
+  "id": "accountant",
+  "displayName": "Accountant",
+  "description": "A chibi Codex pet closely based on Hayase Yuuka official Blue Archive visual design.",
+  "spritesheetPath": "spritesheet.webp",
+  "kind": "person"
+}
