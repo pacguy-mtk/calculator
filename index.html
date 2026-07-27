@@ -3203,7 +3203,8 @@ When using tools, present the result clearly and concisely. Do NOT repeat the ra
               description: { type: "string", description: "Item name" },
               width: { type: "number", description: "Width in ft or cm" },
               height: { type: "number", description: "Height in ft or quantity" },
-              material: { type: "string", enum: ["tarpaulin-solvent", "tarpaulin-uv", "led-3d", "led-3d-uv"] }
+              material: { type: "string", enum: ["tarpaulin-solvent", "tarpaulin-uv", "led-3d", "led-3d-uv"] },
+              quantity: { type: "number", description: "How many of this item (default: 1). E.g. 5 identical banners." }
             },
             required: ["description", "width", "height", "material"]
           }
@@ -3218,6 +3219,7 @@ When using tools, present the result clearly and concisely. Do NOT repeat the ra
       const tier = args.tier || activeTier;
       switch (name) {
         case "calculate_quote": {
+          const qty = Math.max(1, parseInt(args.quantity) || 1);
           const item = createItem(args.description || "Signage item", args.width, args.height, args.material);
           const tierPrice = prices[tier]?.[args.material] ?? 0;
           const finalItem = { ...item, unitPrice: tierPrice };
@@ -3233,9 +3235,9 @@ When using tools, present the result clearly and concisely. Do NOT repeat the ra
             width: args.width,
             height: args.height,
             unitPrice: tierPrice,
-            quantity: finalItem.quantity,
-            unit: finalItem.unit,
-            subtotal: finalItem.subtotal
+            quantity: qty,
+            each: finalItem.subtotal,
+            subtotal: finalItem.subtotal * qty
           };
         }
         case "get_prices": {
@@ -3253,10 +3255,23 @@ When using tools, present the result clearly and concisely. Do NOT repeat the ra
           return { items: mapped, count: mapped.length, total };
         }
         case "add_item_to_quote": {
-          const item = createItem(args.description, args.width, args.height, args.material);
-          items.push(item);
+          const qty = Math.max(1, parseInt(args.quantity) || 1);
+          let addedTotal = 0;
+          let lastItem = null;
+          for (let i = 0; i < qty; i++) {
+            const item = createItem(args.description, args.width, args.height, args.material);
+            items.push(item);
+            addedTotal += item.subtotal;
+            lastItem = item;
+          }
           render();
-          return { success: true, message: `Added "${args.description}" — RM ${item.subtotal.toFixed(2)}` };
+          return {
+            success: true,
+            message: `Added ${qty}x "${args.description}" — RM ${addedTotal.toFixed(2)} total`,
+            each: lastItem.subtotal,
+            quantity: qty,
+            total: addedTotal
+          };
         }
         default:
           return { error: "Unknown tool" };
